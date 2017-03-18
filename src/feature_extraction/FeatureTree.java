@@ -6,6 +6,13 @@ package feature_extraction;
 public class FeatureTree {
     private FeatureTreeNode _root;
 
+    private FeatureTreeNode _header;
+    private FeatureTreeNode _document;
+
+    public FeatureTree() {
+
+    }
+
     public FeatureTree(FeatureTreeNode root){
         this._root = root;
     }
@@ -14,4 +21,11 @@ public class FeatureTree {
         return _root;
     }
 
+    public FeatureTreeNode getHeader(){
+        return _header;
+    }
+
+    public FeatureTreeNode getDocument() {
+        return _document;
+    }
 }

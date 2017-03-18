@@ -5,6 +5,10 @@ package feature_extraction;
  */
 public interface IFeatureExtractor {
 
+    enum FileType {
+        RTF, JPG
+    }
+
 
 
 }

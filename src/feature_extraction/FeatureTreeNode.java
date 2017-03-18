@@ -10,6 +10,7 @@ public class FeatureTreeNode {
 
     private Feature _data;
     private List<FeatureTreeNode> _children;
+    private FeatureTreeNode _parent;
 
     public FeatureTreeNode(Feature data){
         this._data = data;
