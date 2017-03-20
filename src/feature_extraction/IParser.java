@@ -5,5 +5,6 @@ package feature_extraction;
  */
 public interface IParser {
 
+    FeatureTree Parse(String path);
 
 }
