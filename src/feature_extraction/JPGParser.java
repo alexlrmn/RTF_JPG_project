@@ -149,6 +149,7 @@ public class JPGParser implements IParser{
             }
 
             else {
+
                 buffer.append(hexArray[i]);
             }
         }
