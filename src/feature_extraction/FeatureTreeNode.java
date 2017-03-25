@@ -13,6 +13,20 @@ public class FeatureTreeNode {
     private FeatureTreeNode _parent;
     private int _depth;
 
+    public FeatureTreeNode() {
+        this._data = "";
+        this._depth = 0;
+        this._children = new ArrayList<FeatureTreeNode>();
+        this._parent = null;
+    }
+
+    public FeatureTreeNode(String data) {
+        this._data = data;
+        this._children = new ArrayList<FeatureTreeNode>();
+        this._parent = null;
+        this._depth = 0;
+    }
+
     public FeatureTreeNode(FeatureTreeNode parent){
         this._data = "";
         this._children = new ArrayList<FeatureTreeNode>();

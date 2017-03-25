@@ -4,6 +4,35 @@
     <exclude-output />
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tika-1.14" isTestSource="false" />
+    </content>
+    <content url="file://$MODULE_DIR$/tika-1.14">
+      <sourceFolder url="file://$MODULE_DIR$/tika-1.14/tika-example/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tika-1.14/tika-server/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tika-1.14/tika-serialization/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tika-1.14/tika-app/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tika-1.14/tika-dotnet/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tika-1.14/tika-translate/src/test/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tika-1.14/tika-langdetect/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tika-1.14/tika-parsers/src/test/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tika-1.14/tika-app/src/test/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tika-1.14/tika-bundle/src/test/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tika-1.14/tika-parsers/src/test/resources/org/apache/tika/parser/ner/opennlp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tika-1.14/tika-xmp/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tika-1.14/tika-core/src/main/java/org/apache/tika" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tika-1.14/tika-parsers/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tika-1.14/tika-batch/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tika-1.14/tika-java7/src/test/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tika-1.14/tika-batch/src/test/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tika-1.14/tika-serialization/src/test/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tika-1.14/tika-server/src/test/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tika-1.14/tika-parsers/src/test/resources/test-documents" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tika-1.14/tika-translate/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tika-1.14/tika-core/src/test/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tika-1.14/tika-java7/src/main/java/org/apache/tika/filetypedetector" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tika-1.14/tika-xmp/src/test/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tika-1.14/tika-langdetect/src/test/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tika-1.14/tika-example/src/test/java" isTestSource="false" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

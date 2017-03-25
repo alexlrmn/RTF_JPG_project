@@ -5,10 +5,7 @@ package feature_extraction;
  */
 public interface IFeatureExtractor {
 
-    enum FileType {
-        RTF, JPG
-    }
+    enum FileType { RTF, JPG }
 
-
-
+    void ExtractFeatures(FileType type, String path);
 }

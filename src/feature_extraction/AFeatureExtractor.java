@@ -5,6 +5,7 @@ package feature_extraction;
  */
 public abstract class AFeatureExtractor implements IFeatureExtractor {
 
-    protected IParser parser;
+    public AFeatureExtractor() {
 
+    }
 }

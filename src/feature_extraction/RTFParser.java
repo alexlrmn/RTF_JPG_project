@@ -1,16 +1,13 @@
 package feature_extraction;
-
-import sun.reflect.generics.tree.Tree;
-
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.util.Scanner;
-
 /**
  * Created by Alex on 3/18/2017.
  */
 public class RTFParser implements IParser {
+
+    private FeatureTree _ft;
 
     private String readFile(String path) {
         String file_cont;
@@ -37,23 +34,25 @@ public class RTFParser implements IParser {
         return file_cont;
     }
 
-    public FeatureTree Parse(String path) {
+    public void Parse(String path) {
 
         String file_cont = readFile(path);
 
-        FeatureTreeNode header = null;
-        FeatureTreeNode document = null;
+        FeatureTreeNode root = null;
         int curr_index = 0;
 
-        boolean eof = false;
+        boolean EOF = false;
 
         if (file_cont.charAt(0) == '{'){
-            header = new FeatureTreeNode(null);
+            int index = file_cont.substring(1).indexOf('{');
 
-            FeatureTreeNode parent = null;
-            FeatureTreeNode iterator = header;
+            root = new FeatureTreeNode(file_cont.substring(1, index));
+
+            FeatureTreeNode parent;
+            FeatureTreeNode iterator = root;
             StringBuilder data = new StringBuilder();
-            for (int i = 0 ; i < file_cont.length() && !eof; i++){
+
+            for (int i = index ; i < file_cont.length() && !EOF; i++){
                 switch (file_cont.charAt(i)){
                     case '{':
                         iterator.setData(data.toString());
@@ -63,20 +62,23 @@ public class RTFParser implements IParser {
                         data = new StringBuilder();
                         break;
                     case '}':
-                        iterator.setData(data.toString());
-                        if (iterator.getParent().equals(header)) {
-                            document = new FeatureTreeNode(null);
-                            iterator = document;
-                        }
-                        else if (document != null && iterator.getParent().equals(document)) {
-                            eof = true;
+//                        iterator.setData(data.toString());
+//
+//                        if (iterator.getParent().equals(root)) {
+//                            eof = true;
+//                            curr_index = i;
+//                            break;
+//                        }
+
+                        if (iterator.getParent() == null && iterator.getDepth() == 0){
+                            iterator.addChild(new FeatureTreeNode(data.toString(), iterator));
+                            EOF = true;
                             curr_index = i;
                             break;
                         }
-                        else {
-                            iterator = iterator.getParent();
-                        }
 
+                        iterator.setData(data.toString());
+                        iterator = iterator.getParent();
                         data = new StringBuilder();
 
                         break;
@@ -88,17 +90,12 @@ public class RTFParser implements IParser {
 
         }
 
-        FeatureTree fTree = new FeatureTree(header, document);
-        return fTree;
-        //ft.writeTree("d:\\temp\\tree.txt");
-
+        this._ft = new FeatureTree(root);
     }
 
-//    public static void main(String[] args) {
-//        String path = "d:\\temp\\test1.rtf";
-//        String cont = readFile(path);
-//        Parse(cont);
-//
-//    }
+    public FeatureTree getTree(){
+        return _ft;
+    }
+
 
 }
