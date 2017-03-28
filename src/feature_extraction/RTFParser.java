@@ -1,17 +1,18 @@
 package feature_extraction;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 /**
  * Created by Alex on 3/18/2017.
  */
 public class RTFParser implements IParser {
 
-    private FeatureTree _ft;
-
     private String readFile(String path) {
         String file_cont;
-        try{
+        try {
 //            Scanner in = new Scanner(new FileReader(path));
 //            StringBuilder sb = new StringBuilder();
 
@@ -26,7 +27,7 @@ public class RTFParser implements IParser {
 
             file_cont = sb.toString();
             */
-        } catch (FileNotFoundException e){
+        } catch (FileNotFoundException e) {
             System.out.println(e.getMessage());
             file_cont = null;
         }
@@ -34,30 +35,32 @@ public class RTFParser implements IParser {
         return file_cont;
     }
 
-    public void Parse(String path) {
+    public IMetadata Parse(String path) {
+
+        Map<String, List<Integer>> word_count = new HashMap<>();
 
         String file_cont = readFile(path);
 
-        FeatureTreeNode root = null;
+        DataTreeNode root = null;
         int curr_index = 0;
 
         boolean EOF = false;
 
-        if (file_cont.charAt(0) == '{'){
+        if (file_cont.charAt(0) == '{') {
             int index = file_cont.substring(1).indexOf('{');
 
-            root = new FeatureTreeNode(file_cont.substring(1, index));
+            root = new DataTreeNode(file_cont.substring(1, index));
 
-            FeatureTreeNode parent;
-            FeatureTreeNode iterator = root;
+            DataTreeNode parent;
+            DataTreeNode iterator = root;
             StringBuilder data = new StringBuilder();
 
-            for (int i = index ; i < file_cont.length() && !EOF; i++){
-                switch (file_cont.charAt(i)){
+            for (int i = index; i < file_cont.length(); i++) {
+                switch (file_cont.charAt(i)) {
                     case '{':
                         iterator.setData(data.toString());
                         parent = iterator;
-                        iterator = new FeatureTreeNode(parent);
+                        iterator = new DataTreeNode(parent);
                         parent.addChild(iterator);
                         data = new StringBuilder();
                         break;
@@ -70,8 +73,8 @@ public class RTFParser implements IParser {
 //                            break;
 //                        }
 
-                        if (iterator.getParent() == null && iterator.getDepth() == 0){
-                            iterator.addChild(new FeatureTreeNode(data.toString(), iterator));
+                        if ( iterator.getParent() == null && iterator.getDepth() == 0) {
+                            iterator.addChild(new DataTreeNode(data.toString(), iterator));
                             EOF = true;
                             curr_index = i;
                             break;
@@ -90,12 +93,12 @@ public class RTFParser implements IParser {
 
         }
 
-        this._ft = new FeatureTree(root);
+        DataTree dt = new DataTree(root);
+
     }
 
-    public FeatureTree getTree(){
-        return _ft;
-    }
+    private void addEntry(Map<String, List<Integer>> word_count, String control_word){
 
+    }
 
 }

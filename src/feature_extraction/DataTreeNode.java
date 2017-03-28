@@ -6,58 +6,56 @@ import java.util.List;
 /**
  * Created by Alex on 3/17/2017.
  */
-public class FeatureTreeNode {
+public class DataTreeNode {
 
     private String _data;
-    private List<FeatureTreeNode> _children;
-    private FeatureTreeNode _parent;
+    private List<DataTreeNode> _children;
+    private DataTreeNode _parent;
     private int _depth;
 
-    public FeatureTreeNode() {
-        this._data = "";
-        this._depth = 0;
-        this._children = new ArrayList<FeatureTreeNode>();
-        this._parent = null;
-    }
-
-    public FeatureTreeNode(String data) {
+    public DataTreeNode(String data) {
         this._data = data;
-        this._children = new ArrayList<FeatureTreeNode>();
+        this._children = new ArrayList<DataTreeNode>();
         this._parent = null;
         this._depth = 0;
     }
 
-    public FeatureTreeNode(FeatureTreeNode parent){
+    public DataTreeNode(DataTreeNode parent){
         this._data = "";
-        this._children = new ArrayList<FeatureTreeNode>();
+        this._children = new ArrayList<DataTreeNode>();
         this._parent = parent;
 
-        if (parent != null)
+        if (parent != null){
             this._depth = parent.getDepth() + 1;
+            parent.addChild(this);
+        }
+
         else
             this._depth = 0;
     }
 
-    public FeatureTreeNode(String data, FeatureTreeNode parent){
+    public DataTreeNode(String data, DataTreeNode parent){
         this._data = data;
-        _children = new ArrayList<FeatureTreeNode>();
+        _children = new ArrayList<DataTreeNode>();
         this._parent = parent;
 
-        if (parent != null)
+        if (parent != null){
             this._depth = parent.getDepth() + 1;
+            parent.addChild(this);
+        }
         else
             this._depth = 0;
     }
 
-    public void addChild(FeatureTreeNode child){
+    public void addChild(DataTreeNode child){
         this._children.add(child);
     }
 
-    public List<FeatureTreeNode> getChildren() {
+    public List<DataTreeNode> getChildren() {
         return this._children;
     }
 
-    public FeatureTreeNode getParent() {
+    public DataTreeNode getParent() {
         return this._parent;
     }
 
@@ -65,7 +63,7 @@ public class FeatureTreeNode {
         return _depth;
     }
 
-    public boolean equals(FeatureTreeNode comp){
+    public boolean equals(DataTreeNode comp){
         return (this._depth == comp.getDepth() && this._data == comp._data);
     }
 
@@ -79,6 +77,9 @@ public class FeatureTreeNode {
         this._data = sb.toString();
     }
 
+    /**
+     * For printing purpose.
+     */
     public String indented() {
         StringBuilder sb = new StringBuilder();
         for (int i = 0 ; i < this._depth ; i++){

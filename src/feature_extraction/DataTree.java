@@ -7,16 +7,16 @@ import java.io.PrintWriter;
 /**
  * Created by Alex on 3/17/2017.
  */
-public class FeatureTree {
-    private FeatureTreeNode _root;
+public class DataTree {
+    private DataTreeNode _root;
 
-    public FeatureTree() { }
+    public DataTree() { }
 
-    public FeatureTree(FeatureTreeNode root){
+    public DataTree(DataTreeNode root){
         this._root = root;
     }
 
-    public FeatureTreeNode getRoot() {
+    public DataTreeNode getRoot() {
         return _root;
     }
 
@@ -33,12 +33,12 @@ public class FeatureTree {
         }
     }
 
-    public void writeTreeRec(FeatureTreeNode it) {
+    public void writeTreeRec(DataTreeNode it) {
         this.sb.append(it.indented()).append(it.getData()).append("\n");
         if (it.getChildren().size() != 0) {
 //            this.sb.append(it.indented()).append("<Children>\n");
 
-            for (FeatureTreeNode c : it.getChildren()) {
+            for (DataTreeNode c : it.getChildren()) {
                 writeTreeRec(c);
             }
 //            this.sb.append(it.indented()).append("</Children>\n");

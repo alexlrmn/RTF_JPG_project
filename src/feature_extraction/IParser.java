@@ -5,6 +5,6 @@ package feature_extraction;
  */
 public interface IParser {
 
-    void Parse(String path);
+    IMetadata Parse(String path);
 
 }

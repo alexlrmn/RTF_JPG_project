@@ -1,10 +1,8 @@
 package feature_extraction;
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferByte;
-import java.awt.image.WritableRaster;
+import sun.invoke.empty.Empty;
+
 import java.io.File;
-import java.io.IOException;
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,149 +13,258 @@ import java.util.Map;
  */
 public class JPGParser implements IParser{
 
-    private static final Map<String, String> _markers = createMap();
-    private static Map<String, String> createMap()
+    private  final Map<String, String> _markers = createMap();
+
+
+    private  Map<String, String> createMap()
     {
         Map<String,String> markers = new HashMap<String,String>();
-        markers.put("C4", "DHT");
-//        markers.put("C8", "JPG");
-        markers.put("CC", "DAC");
-        markers.put("D8", "SOI");
-        markers.put("D9", "EOI");
-        markers.put("DA", "SOS");
-        markers.put("DB", "DQT");
-        markers.put("DC", "DNL");
-        markers.put("DD", "DRI");
-        markers.put("DE", "DHP");
-        markers.put("DF", "EXP");
-        markers.put("FE", "COM");
-        markers.put("C",  "SOF");
+        markers.put("c4", "DHT");
+        markers.put("c8", "JPG");
+        markers.put("cc", "DAC");
+        markers.put("d8", "SOI");
+        markers.put("d9", "EOI");
+        markers.put("da", "SOS");
+        markers.put("db", "DQT");
+        markers.put("dc", "DNL");
+        markers.put("dd", "DRI");
+        markers.put("de", "DHP");
+        markers.put("df", "EXP");
+        markers.put("fe", "COM");
+        markers.put("c0", "SOF");
+        markers.put("c1", "SOF");
+        markers.put("c2", "SOF");
+        markers.put("c3", "SOF");
+        markers.put("c5", "SOF");
+        markers.put("c6", "SOF");
+        markers.put("c7", "SOF");
+        markers.put("c9", "SOF");
+        markers.put("ca", "SOF");
+        markers.put("cb", "SOF");
+        markers.put("cc", "SOF");
+        markers.put("ce", "SOF");
+        markers.put("cf", "SOF");
         for (int i = 0; i < 8; i++)
-            markers.put("D" + hexArray[i], "RST" + hexArray[i]);
-//        markers.put("D",  "RST");
-        for (int i = 0; i < hexArray.length; i++)
-            markers.put("E" + hexArray[i], "APP" + hexArray[i]);
-//        markers.put("E",  "APP");
-//        markers.put("F",  "JPG");
+            markers.put("d" + hexSymbols[i], "RST" + hexSymbols[i]);
+        for (int i = 0; i < hexSymbols.length; i++)
+            markers.put("e" + hexSymbols[i], "APP" + hexSymbols[i]);
+        for (int i = 0; i < hexSymbols.length - 4; i++)
+            for (int j = 0; j < hexSymbols.length; j++){
+                String mrkr = hexSymbols[i] + hexSymbols[j];
+                markers.put(hexSymbols[i] + hexSymbols[j], "RES");
+            }
+        markers.remove("00");
+        for (int i = 0; i < hexSymbols.length - 2; i++)
+            markers.put("f" + hexSymbols[i], "JPG" + hexSymbols[i]);
 
         markers.put("01", "TEM");
+        markers.put("ff", "UNKNOWN");
         return markers;
     }
 
-//    enum Marker {
-//        E,
-//        E0, E1, E2, E3, E4, E5, E6, E7, E8, E9, EA, EB, EC, ED, EE, EF,                                //APP_n
-//        FE,                                                                                            //COM
-//        CC,                                                                                            //DAC
-//        DE,                                                                                            //DHP
-//        C4,                                                                                            //DHT
-//        DC,                                                                                            //DNL
-//        DB,                                                                                            //DQT
-//        DD,                                                                                            //DRI
-//        D9,                                                                                            //EOI
-//        DF,                                                                                            //EXP
-//        C8,                                                                                            //JPG
-//        F,
-//        F0, F1, F2, F3, F4, F5, F6, F7, F8, F9, FA, FB, FC, FD,                                        //JPG_n
-//        D,
-//        DO, D1, D2, D3, D4, D5, D6, D7,                                                                //RST_m
-//        C,
-//        C0, C1, C2, C3, C5, C6, C7, C9, CA, CB, CD, CE, CF,                                            //SOF_n
-//        D8,                                                                                            //SOI
-//        DA,                                                                                            //SOS
-//        FF01                                                                                           //TEM
-//    }
+    private List<String> readFile(String path) {
 
-    private String readFile(String path) {
-        String cont;
-        StringBuilder sb = new StringBuilder();
-        try {
-            BufferedImage bi = ImageIO.read(new File(path));
-            WritableRaster wr = bi.getRaster();
-            DataBufferByte data = (DataBufferByte) wr.getDataBuffer();
-            byte[][] bData = data.getBankData();
-            for (int i = 0; i < bData.length; i++) {
-                sb.append(bytesToHex(bData[i]));
-            }
-        } catch (IOException e){
+        List<String> file_cont = new ArrayList<>();
+        try
+        {
+            FileInputStream fis = new FileInputStream(new File(path));
+
+            byte[] bytes = new byte[1];
+            int value = 0;
+            do
+            {
+                value = fis.read(bytes);
+                file_cont.add(toHexFromBytes(bytes));
+
+            }while(value != -1);
+
+        }
+        catch(Exception e)
+        {
             e.printStackTrace();
         }
 
-        cont = sb.toString();
-//        System.out.println(cont);
-        return cont;
+        return file_cont;
     }
 
-    final private static char[] hexArray = "0123456789ABCDEF".toCharArray();
+//    final private static char[] hexArray = "0123456789ABCDEF".toCharArray();
 
-    private  String bytesToHex(byte[] bytes) {
-        char[] hexChars = new char[bytes.length * 2];
-        for ( int j = 0; j < bytes.length; j++ ) {
-            int v = bytes[j] & 0xFF;
-            hexChars[j * 2] = hexArray[v >>> 4];
-            hexChars[j * 2 + 1] = hexArray[v & 0x0F];
-        }
-        return new String(hexChars);
-    }
+//    private  String bytesToHex(byte[] bytes) {
+//        char[] hexChars = new char[bytes.length * 2];
+//        for ( int j = 0; j < bytes.length; j++ ) {
+//            int v = bytes[j] & 0xFF;
+//            hexChars[j * 2] = hexArray[v >>> 4];
+//            hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+//        }
+//        return new String(hexChars);
+//    }
 
-    private String[] hexToArray(String hex) {
-        List<String> hexArray = new ArrayList<String>();
-        for (int i = 0; i < hex.length() - 2; i = i + 2){
-            hexArray.add(hex.charAt(i) + "" + hex.charAt(i + 1));
-        }
+//    private List<String> hexToArray(String hex) {
+//        List<String> hexArray = new ArrayList<String>();
+//        for (int i = 0; i < hex.length() - 2; i = i + 2){
+//            hexArray.add(hex.charAt(i) + "" + hex.charAt(i + 1));
+//        }
+//
+//        return hexArray;
+//    }
 
-        return (String[]) hexArray.toArray();
-    }
+    public IMetadata Parse(String path) {
+        Map<String, Integer> marker_count = new HashMap<>();
 
-    public void Parse(String path) {
-
-        String file_cont = readFile(path);
-        String[] hexArray = hexToArray(file_cont);
-        String last_marker = "";
+        List<String> hexArray = readFile(path);
         int curr_index = 0;
-        boolean EOF = false;
+        String last_marker = "";
         StringBuilder buffer = new StringBuilder();
 
-        FeatureTreeNode root = new FeatureTreeNode("/image");
-        FeatureTreeNode iterator = root;
-        FeatureTreeNode parent = null;
-        for (int i = 0; i < hexArray.length - 1 && !EOF; i++){
-            if (hexArray[i] == "FF"){
+        DataTreeNode root = new DataTreeNode("/image");
+        DataTreeNode iterator = root;
+        DataTreeNode parent = null;
+        for (int i = 0; i < hexArray.size() - 1; i++){
+            if (hexArray.get(i).equals("ff") && !hexArray.get(i+1).equals("00")){
 
                 iterator.setData(buffer.toString());
                 buffer = new StringBuilder();
+                String marker = hexArray.get(i+1);
+                try {
+                    switch (this._markers.get(hexArray.get(i + 1))) {
+                        case "SOI":
+                            if (last_marker.equals(""))
+                                parent = iterator;
+                            else
+                                parent = regressToMarker(iterator, "SOI");
+                            iterator = new DataTreeNode("/SOI ", parent);
+                            last_marker = "SOI";
+                            parent = iterator;
+                            addMarkerToDict(marker_count, "SOI", "-1");
+                            break;
+                        case "EOI":
+                            parent = regressToMarker(iterator, "SOI").getParent();
+                            iterator = new DataTreeNode("/EOI ", parent);
+                            last_marker = "SOI";
+                            curr_index = i;
+                            addMarkerToDict(marker_count, "EOI", "-1");
+                            break;
+                        case "SOF":
+                            if (!last_marker.equals("SOI"))
+                                parent = regressToMarker(iterator, "SOF").getParent();
+                            else
+                                parent = iterator.getParent();
+                            iterator = new DataTreeNode("/SOF" + hexArray.get(i + 1).charAt(1) + " ", parent);
+                            last_marker = "SOF";
+                            parent = iterator;
 
-                switch (hexArray[i+1]){
-                    case "D8":
-                        parent = iterator;
-                        iterator = new FeatureTreeNode("/" + this._markers.get("D8"), parent);
-                        parent.addChild(iterator);
-                        break;
-                    case "D9":
-                        iterator.setData(buffer.toString());
-                        curr_index = i;
-                        EOF = true;
-                        break;
-                    case "DA":
+                            addMarkerToDict(marker_count, "SOF", hexArray.get(i + 1).charAt(1) + "");
+                            break;
+                        case "SOS":
+                            parent = regress(iterator);
+                            iterator = new DataTreeNode("/SOS ", parent);
+                            parent = iterator;
 
-                        break;
+                            addMarkerToDict(marker_count, "SOS", "-1");
+                            break;
+                        case "DHT":
+                            if (!last_marker.equals("SOI"))
+                                parent = regress(iterator);
+                            else parent = iterator;
+                            iterator = new DataTreeNode("/DHT ", parent);
 
+                            addMarkerToDict(marker_count, "DHT", "-1");
+                            break;
+                        case "DAC":
+                            if (!last_marker.equals("SOI"))
+                                parent = regress(iterator);
+                            else parent = iterator;
+                            iterator = new DataTreeNode("/DAC ", parent);
 
-                    default:
-                        break;
+                            addMarkerToDict(marker_count, "DAC", "-1");
+                            break;
+
+                        default:
+//                        parent = iterator.getParent();
+                            iterator = new DataTreeNode("/" + this._markers.get(hexArray.get(i + 1)) + " ", parent);
+                            addMarkerToDict(marker_count, this._markers.get(hexArray.get(i + 1)), "-1");
+
+                            break;
+                    }
+                } catch (Exception e){
+                    e.printStackTrace();
                 }
+
+                i = i + 1;
             }
 
             else {
 
-                buffer.append(hexArray[i]);
+                buffer.append(hexArray.get(i) + ",");
             }
         }
 
+        DataTree dt = new DataTree(root);
+        IMetadata metadata = new JPGMetadata(dt, curr_index, hexArray);
+
+//        dt.writeTree("D:\\temp\\tree.txt");
+
+        return metadata;
     }
 
-//    public static void main(String[] args) {
-//        String path = "D:\\temp\\jpg.jpg";
-//        readFile(path);
-//    }
+    private DataTreeNode regressToMarker(DataTreeNode iterator, String marker){
+        DataTreeNode temp = iterator;
+        try {
+            while (!iterator.getData().contains(marker))
+                iterator = iterator.getParent();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return iterator;
+    }
+
+    private void addMarkerToDict(Map<String, Integer> marker_count, String marker, String unit){
+        String toAdd = marker;
+        if (!unit.equals("-1"))
+            toAdd += unit;
+
+        int count = marker_count.containsKey(marker) ? marker_count.get(marker) : 0;
+        marker_count.put(marker, count + 1);
+    }
+
+    private DataTreeNode regress(DataTreeNode iterator) {
+        try {
+            while (!iterator.getData().contains("SOF"))
+                iterator = iterator.getParent();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return iterator;
+    }
+
+    private final static String[] hexSymbols = { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f" };
+
+    private final int BITS_PER_HEX_DIGIT = 4;
+
+    private String toHexFromByte(final byte b) {
+        byte leftSymbol = (byte)((b >>> BITS_PER_HEX_DIGIT) & 0x0f);
+        byte rightSymbol = (byte)(b & 0x0f);
+
+        return (hexSymbols[leftSymbol] + hexSymbols[rightSymbol]);
+    }
+
+    public String toHexFromBytes(final byte[] bytes){
+        if(bytes == null || bytes.length == 0)
+        {
+            return ("");
+        }
+
+        // there are 2 hex digits per byte
+        StringBuilder hexBuffer = new StringBuilder(bytes.length * 2);
+
+        // for each byte, convert it to hex and append it to the buffer
+        for(int i = 0; i < bytes.length; i++)
+        {
+            hexBuffer.append(toHexFromByte(bytes[i]));
+        }
+
+        return (hexBuffer.toString());
+    }
 }
