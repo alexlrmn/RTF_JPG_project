@@ -1,5 +1,9 @@
-package feature_extraction;
-import sun.invoke.empty.Empty;
+package feature_extraction.Parsers;
+
+import feature_extraction.Metadata.DataTree;
+import feature_extraction.Metadata.DataTreeNode;
+import feature_extraction.Metadata.IMetadata;
+import feature_extraction.Metadata.JPGMetadata;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -11,11 +15,9 @@ import java.util.Map;
 /**
  * Created by Alex on 3/23/2017.
  */
-public class JPGParser implements IParser{
+public class JPGParser implements IParser {
 
     private  final Map<String, String> _markers = createMap();
-
-
     private  Map<String, String> createMap()
     {
         Map<String,String> markers = new HashMap<String,String>();
@@ -86,27 +88,6 @@ public class JPGParser implements IParser{
 
         return file_cont;
     }
-
-//    final private static char[] hexArray = "0123456789ABCDEF".toCharArray();
-
-//    private  String bytesToHex(byte[] bytes) {
-//        char[] hexChars = new char[bytes.length * 2];
-//        for ( int j = 0; j < bytes.length; j++ ) {
-//            int v = bytes[j] & 0xFF;
-//            hexChars[j * 2] = hexArray[v >>> 4];
-//            hexChars[j * 2 + 1] = hexArray[v & 0x0F];
-//        }
-//        return new String(hexChars);
-//    }
-
-//    private List<String> hexToArray(String hex) {
-//        List<String> hexArray = new ArrayList<String>();
-//        for (int i = 0; i < hex.length() - 2; i = i + 2){
-//            hexArray.add(hex.charAt(i) + "" + hex.charAt(i + 1));
-//        }
-//
-//        return hexArray;
-//    }
 
     public IMetadata Parse(String path) {
         Map<String, Integer> marker_count = new HashMap<>();
@@ -200,9 +181,9 @@ public class JPGParser implements IParser{
         }
 
         DataTree dt = new DataTree(root);
-        IMetadata metadata = new JPGMetadata(dt, curr_index, hexArray);
+        IMetadata metadata = new JPGMetadata(dt, curr_index, hexArray, marker_count);
 
-//        dt.writeTree("D:\\temp\\tree.txt");
+        dt.writeTree("D:\\temp\\tree.txt");
 
         return metadata;
     }

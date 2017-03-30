@@ -1,4 +1,4 @@
-package feature_extraction;
+package feature_extraction.Metadata;
 
 
 import java.io.FileNotFoundException;
@@ -36,12 +36,10 @@ public class DataTree {
     public void writeTreeRec(DataTreeNode it) {
         this.sb.append(it.indented()).append(it.getData()).append("\n");
         if (it.getChildren().size() != 0) {
-//            this.sb.append(it.indented()).append("<Children>\n");
 
             for (DataTreeNode c : it.getChildren()) {
                 writeTreeRec(c);
             }
-//            this.sb.append(it.indented()).append("</Children>\n");
         }
     }
 }

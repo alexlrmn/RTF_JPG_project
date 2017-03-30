@@ -1,4 +1,4 @@
-package feature_extraction;
+package feature_extraction.Metadata;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,14 +15,14 @@ public class DataTreeNode {
 
     public DataTreeNode(String data) {
         this._data = data;
-        this._children = new ArrayList<DataTreeNode>();
+        this._children = new ArrayList<>();
         this._parent = null;
         this._depth = 0;
     }
 
     public DataTreeNode(DataTreeNode parent){
         this._data = "";
-        this._children = new ArrayList<DataTreeNode>();
+        this._children = new ArrayList<>();
         this._parent = parent;
 
         if (parent != null){
@@ -36,7 +36,7 @@ public class DataTreeNode {
 
     public DataTreeNode(String data, DataTreeNode parent){
         this._data = data;
-        _children = new ArrayList<DataTreeNode>();
+        _children = new ArrayList<>();
         this._parent = parent;
 
         if (parent != null){
@@ -51,9 +51,7 @@ public class DataTreeNode {
         this._children.add(child);
     }
 
-    public List<DataTreeNode> getChildren() {
-        return this._children;
-    }
+    public List<DataTreeNode> getChildren() { return this._children; }
 
     public DataTreeNode getParent() {
         return this._parent;
@@ -67,9 +65,7 @@ public class DataTreeNode {
         return (this._depth == comp.getDepth() && this._data == comp._data);
     }
 
-    public String getData() {
-        return this._data;
-    }
+    public String getData() { return this._data; }
 
     public void setData(String data){
         StringBuilder sb = new StringBuilder();
@@ -88,4 +84,10 @@ public class DataTreeNode {
 
         return sb.toString();
     }
+
+    public String getFeature() { return this._data.split(" ")[0]; }
+
+    public boolean isRoot() { return this._depth == 0; }
+
+    public boolean isLeaf() { return this._children.size() == 0; }
 }

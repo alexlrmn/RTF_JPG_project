@@ -1,11 +1,12 @@
 package feature_extraction;
 
+import java.util.Map;
+
 /**
  * Created by Alex on 3/17/2017.
  */
-public interface IFeatureExtractor {
+public interface IFeatureExtractor<T> {
 
-    enum FileType { RTF, JPG }
-
-    void ExtractFeatures(FileType type, String path);
+    Map<String, Integer> ExtractFeaturesFrequencyFromSingleElement(T element);
+    String GetName();
 }
