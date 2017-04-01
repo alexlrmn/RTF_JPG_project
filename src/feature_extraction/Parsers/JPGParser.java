@@ -18,8 +18,8 @@ import java.util.Map;
 public class JPGParser implements IParser {
 
     private  final Map<String, String> _markers = createMap();
-    private  Map<String, String> createMap()
-    {
+    private  Map<String, String> createMap() {
+
         Map<String,String> markers = new HashMap<String,String>();
         markers.put("c4", "DHT");
         markers.put("c8", "JPG");
@@ -183,13 +183,13 @@ public class JPGParser implements IParser {
         DataTree dt = new DataTree(root);
         IMetadata metadata = new JPGMetadata(dt, curr_index, hexArray, marker_count);
 
-        dt.writeTree("D:\\temp\\tree.txt");
+//        dt.writeTree("D:\\temp\\tree.txt");
 
         return metadata;
     }
 
     private DataTreeNode regressToMarker(DataTreeNode iterator, String marker){
-        DataTreeNode temp = iterator;
+//        DataTreeNode temp = iterator;
         try {
             while (!iterator.getData().contains(marker))
                 iterator = iterator.getParent();
@@ -201,9 +201,8 @@ public class JPGParser implements IParser {
     }
 
     private void addMarkerToDict(Map<String, Integer> marker_count, String marker, String unit){
-        String toAdd = marker;
         if (!unit.equals("-1"))
-            toAdd += unit;
+            marker += unit;
 
         int count = marker_count.containsKey(marker) ? marker_count.get(marker) : 0;
         marker_count.put(marker, count + 1);
@@ -219,6 +218,8 @@ public class JPGParser implements IParser {
 
         return iterator;
     }
+
+
 
     private final static String[] hexSymbols = { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f" };
 

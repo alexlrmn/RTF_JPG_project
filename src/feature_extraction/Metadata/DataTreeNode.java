@@ -85,8 +85,6 @@ public class DataTreeNode {
         return sb.toString();
     }
 
-    public String getFeature() { return this._data.split(" ")[0]; }
-
     public boolean isRoot() { return this._depth == 0; }
 
     public boolean isLeaf() { return this._children.size() == 0; }

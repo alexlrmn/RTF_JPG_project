@@ -4,9 +4,7 @@ import feature_extraction.Metadata.DataTreeNode;
 import feature_extraction.Metadata.IMetadata;
 import feature_extraction.Metadata.RTFMetadata;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.*;
 
 /**
@@ -14,26 +12,58 @@ import java.util.*;
  */
 public class RTFParser implements IParser {
 
-    private String readFile(String path) {
-        String file_cont;
+    public String readFile(String path) throws IOException {
+        BufferedReader br = new BufferedReader(new FileReader(path));
         try {
-            Scanner in = new Scanner(new File(path));
-            file_cont = in.useDelimiter("\\Z").next().replace("\n", "").replace("\r", "");
+            StringBuilder sb = new StringBuilder();
+            String line = br.readLine();
 
-        } catch (FileNotFoundException e) {
-            System.out.println(e.getMessage());
-            file_cont = null;
+            while (line != null) {
+                sb.append(line);
+//                sb.append("\n");
+                line = br.readLine();
+            }
+            return sb.toString();
+        } finally {
+            br.close();
         }
-
-        return file_cont;
     }
 
-    public IMetadata Parse(String path) {
+//    private String    readFile(String path) {
+//        String file_cont;
+//
+//        File f = new File(path);
+//        if(f.exists() && !f.isDirectory()) {
+//            System.out.println("file exists");
+//        }
+//        else{
+//            System.out.println("file doesn't exist");
+//            return "";
+//        }
+//
+//        try {
+//            Scanner in = new Scanner(new File(path));
+//            file_cont = in.useDelimiter("\\Z").next();
+//            file_cont = file_cont.replace("\n", "").replace("\r", "");
+//
+//        } catch (Exception e) {
+//            System.out.println(e.getMessage());
+//            file_cont = null;
+//        }
+//
+//        return file_cont;
+//    }
+
+    public  IMetadata Parse(String path) {
 
         Map<String, Integer> word_count = new HashMap<>();
         Map<String, List<Integer>> word_params = new HashMap<>();
-        String file_cont = readFile(path).replace("\\*\\", "\\");
-
+        String file_cont = "";
+        try {
+             file_cont = readFile(path).replace("\\*\\", "\\");
+        } catch (Exception e){
+            e.printStackTrace();
+        }
         DataTreeNode root = null;
         int curr_index = 0;
 
@@ -41,37 +71,27 @@ public class RTFParser implements IParser {
 
         if (file_cont.charAt(0) == '{') {
 
-            root = new DataTreeNode("\\root", null);
+            root = new DataTreeNode("\\root");
             DataTreeNode parent;
             DataTreeNode iterator = root;
             StringBuilder data = new StringBuilder();
-            StringBuilder word_builder = new StringBuilder();
-//            StringBuilder
-            boolean build_word = false;
-            String word;
+            String group_data;
 
-            for (int i = 0; i < file_cont.length(); i++) {
+            for (int i = 0; i < file_cont.length() && !EOF; i++) {
                 switch (file_cont.charAt(i)) {
                     case '{':
-                        iterator.setData(data.toString());
+                        if (!data.toString().isEmpty()) {
+                            group_data = separate_data(word_count, word_params, data.toString());
+                            iterator.setData(group_data);
+                        }
                         parent = iterator;
                         iterator = new DataTreeNode(parent);
                         data = new StringBuilder();
-
-                        if (build_word){
-                            word = word_builder.toString();
-                            if (!word.isEmpty()){
-                                addEntry(word_params, word_count, word);
-                            }
-                            build_word = false;
-                            word_builder = new StringBuilder();
-                        }
 
                         break;
                     case '}':
 
                         if ( iterator.getParent() == null && iterator.getDepth() == 0 ) {
-                            iterator.addChild(new DataTreeNode(data.toString(), iterator));
                             if (!EOF)
                                 curr_index = i;
 
@@ -79,54 +99,33 @@ public class RTFParser implements IParser {
                             break;
                         }
 
-                        iterator.setData(data.toString());
+                        group_data = separate_data(word_count, word_params, data.toString());
+                        iterator.setData(group_data);
+
                         iterator = iterator.getParent();
                         data = new StringBuilder();
 
-                        if (build_word){
-                            word = word_builder.toString();
-                            addEntry(word_params, word_count, word);
-                            build_word = false;
-                            word_builder = new StringBuilder();
-                        }
 
                         break;
                     default:
-                        if (i != 0 && file_cont.charAt(i-1) == '}'){
+                        if (file_cont.charAt(i-1) == '}'){
                             int j = i;
-                            StringBuilder tmp = new StringBuilder();
-                            while (file_cont.charAt(j) != '}'){
-                                tmp.append(file_cont.charAt(j));
+                            StringBuilder extra_cont = new StringBuilder();
+                            while (j < file_cont.length() && file_cont.charAt(j) != '}' && file_cont.charAt(j) != '{'){
+                                extra_cont.append(file_cont.charAt(j));
                                 j++;
                             }
 
-                            System.out.println(tmp.toString());
+                            i = j - 1;
+                            group_data = separate_data(word_count, word_params, extra_cont.toString());
+                            parent = iterator;
+                            iterator = new DataTreeNode(group_data, parent);
+                            iterator = iterator.getParent();
+                            break;
                         }
 
                         char curr = file_cont.charAt(i);
                         data.append(curr);
-                        if (curr == '\\'){
-                            build_word = true;
-                            word = word_builder.toString();
-                            if (!word.isEmpty()){
-                                addEntry(word_params, word_count, word);
-                            }
-                            word_builder = new StringBuilder();
-                        }
-                        else if (curr == ' ' && build_word){
-                            build_word = false;
-                            word = word_builder.toString();
-                            addEntry(word_params, word_count, word);
-                            word_builder = new StringBuilder();
-                        }
-                        else if (curr == '\''){
-                            build_word = false;
-                            word_builder = new StringBuilder();
-                        }
-                        else if (build_word){
-                            if (curr != ';')
-                                word_builder.append(curr);
-                        }
 
                         break;
                 }
@@ -140,7 +139,7 @@ public class RTFParser implements IParser {
         return metadata;
     }
 
-    private void addEntry(Map<String, List<Integer>> word_params, Map<String, Integer> word_count, String control_word){
+    private void      addEntry(Map<String, List<Integer>> word_params, Map<String, Integer> word_count, String control_word){
         if (control_word.contains("\\'"))
             return;
         String[] part = control_word.split("(?<=\\D)(?=\\d)");
@@ -149,7 +148,7 @@ public class RTFParser implements IParser {
             word_count.put(part[0], count+1);
 
             if (part.length > 1){
-                List<Integer> list = word_params.containsKey(part[0]) ? word_params.get(part[0]) : new ArrayList<Integer>();
+                List<Integer> list = word_params.containsKey(part[0]) ? word_params.get(part[0]) : new ArrayList<>();
                 StringBuilder param = new StringBuilder();
                 for (int i = 0; i < part[1].length(); i++){
                     if (tryParse(part[1].charAt(i) + "")){
@@ -157,16 +156,70 @@ public class RTFParser implements IParser {
                     }
                     else break;
                 }
-
-                list.add(new Integer(param.toString()));
-                word_params.put(part[0], list);
+                try {
+                    list.add(new Integer(param.toString()));
+                    word_params.put(part[0], list);
+                } catch (Exception e){
+                    System.out.println("Count not parse number " + param.toString());
+                }
             }
         } catch (Exception e){
             e.printStackTrace();
         }
     }
 
-    private boolean tryParse(String num) {
+    private String    separate_data(Map<String, Integer> word_count, Map<String, List<Integer>> word_params, String data) {
+
+        StringBuilder group_control_words = new StringBuilder();
+        StringBuilder group_data_builder = new StringBuilder();
+
+        boolean build_control_word = false;
+        StringBuilder control_word_builder = new StringBuilder();
+        String control_word;
+
+        for (int i = 0; i < data.length(); i++){
+            char curr = data.charAt(i);
+
+            if (curr == '\\'){
+                build_control_word = true;
+                control_word = control_word_builder.toString();
+                if (!control_word.isEmpty()){
+                    addEntry(word_params, word_count, control_word);
+                    group_control_words.append("\\" + control_word);
+                }
+
+                control_word_builder = new StringBuilder();
+            }
+            else if (curr == ' ' && build_control_word){
+                build_control_word = false;
+                control_word = control_word_builder.toString();
+                addEntry(word_params, word_count, control_word);
+
+                group_control_words.append("\\" + control_word);
+                control_word_builder = new StringBuilder();
+            }
+            else if (curr == '\''){
+                build_control_word = false;
+                control_word_builder = new StringBuilder();
+            }
+            else if (build_control_word){
+                if (curr != ';')
+                    control_word_builder.append(curr);
+            }
+            else {
+                group_data_builder.append(curr);
+            }
+        }
+
+        if (build_control_word && !control_word_builder.toString().isEmpty()){
+            addEntry(word_params, word_count, control_word_builder.toString());
+            group_control_words.append("\\" + control_word_builder.toString());
+        }
+
+        return group_control_words.append(" ").append(group_data_builder.toString()).toString();
+    }
+
+    private boolean   tryParse(String num) {
         try {
             int x = Integer.parseInt(num);
             return true;
