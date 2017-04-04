@@ -105,7 +105,7 @@ public class JPGParser implements IParser {
 
                 iterator.setData(buffer.toString());
                 buffer = new StringBuilder();
-                String marker = hexArray.get(i+1);
+//                String marker = hexArray.get(i+1);
                 try {
                     switch (this._markers.get(hexArray.get(i + 1))) {
                         case "SOI":
@@ -161,7 +161,6 @@ public class JPGParser implements IParser {
                             break;
 
                         default:
-//                        parent = iterator.getParent();
                             iterator = new DataTreeNode("/" + this._markers.get(hexArray.get(i + 1)) + " ", parent);
                             addMarkerToDict(marker_count, this._markers.get(hexArray.get(i + 1)), "-1");
 
@@ -191,7 +190,7 @@ public class JPGParser implements IParser {
     private DataTreeNode regressToMarker(DataTreeNode iterator, String marker){
 //        DataTreeNode temp = iterator;
         try {
-            while (!iterator.getData().contains(marker))
+            while (!iterator.getData().contains(marker) && iterator.getParent() != null)
                 iterator = iterator.getParent();
         } catch (Exception e){
             e.printStackTrace();
@@ -210,7 +209,7 @@ public class JPGParser implements IParser {
 
     private DataTreeNode regress(DataTreeNode iterator) {
         try {
-            while (!iterator.getData().contains("SOF"))
+            while (!iterator.getData().contains("SOF") && iterator.getParent() != null)
                 iterator = iterator.getParent();
         } catch (Exception e){
             e.printStackTrace();

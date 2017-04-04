@@ -1,6 +1,5 @@
 package feature_extraction;
 
-import feature_extraction.Metadata.DataTree;
 import feature_extraction.Metadata.DataTreeNode;
 import feature_extraction.Metadata.IMetadata;
 import feature_extraction.Parsers.IParser;
@@ -15,11 +14,13 @@ import java.util.Map;
 public class JPGFeatureExtractor<T> extends AFeatureExtractor<T> {
 
     private boolean _extract_single_joint;
-    private boolean _extract_sub_path;
+    private boolean _extract_top_down_sub;
+    private boolean _extract_bot_up_sub;
 
-    public JPGFeatureExtractor(boolean extract_single_joint, boolean extract_sub_path){
-        this._extract_single_joint = extract_single_joint;
-        this._extract_sub_path = extract_sub_path;
+    public JPGFeatureExtractor(boolean top_down_sub, boolean bot_up_sub, boolean single_joint){
+        this._extract_single_joint = single_joint;
+        this._extract_top_down_sub = top_down_sub;
+        this._extract_bot_up_sub = bot_up_sub;
     }
 
     @Override
@@ -41,13 +42,13 @@ public class JPGFeatureExtractor<T> extends AFeatureExtractor<T> {
             addEntry(feature_map, curr_marker);
         }
 
-        if (_extract_sub_path && !iterator.isLeaf() && !iterator.isRoot()) {
+        if (_extract_top_down_sub && !iterator.isLeaf() && !iterator.isRoot()) {
             addEntry(feature_map, curr_feature);
         }
 
         if (iterator.isLeaf()){
 
-            if (_extract_sub_path){
+            if (_extract_bot_up_sub){
                 //Extract all the Bottom-up features
                 String bu_feature = curr_marker;
                 DataTreeNode bu_iterator = iterator.getParent();

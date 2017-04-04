@@ -34,8 +34,8 @@ public class Program {
 //        }
 //         jpp.Parse(path);
 //       testRTFParser("D:\\Final Project\\Files\\RTF\\0cc010ac06ba9376ec6f44fc6a57a0a3920a23d537e02c3a1438c054941127f6");
-//        testJPGFeatureExtractor();
-        testRTFFeatureExtractor();
+        testJPGFeatureExtractor();
+//        testRTFFeatureExtractor();
 
     }
 
@@ -46,7 +46,7 @@ public class Program {
     }
 
     public static void testRTFFeatureExtractor(){
-        IFeatureExtractor<String> fe = new RTFFeatureExtractor<>(true, true);
+        IFeatureExtractor<String> fe = new RTFFeatureExtractor<>(true, true, true);
 
         String path = "D:\\Final Project\\Files\\RTF\\benign\\";
         try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Paths.get(path))) {
@@ -76,9 +76,9 @@ public class Program {
     }
 
     public static void testJPGFeatureExtractor() {
-        IFeatureExtractor<String> fe = new JPGFeatureExtractor<>(true, true);
+        IFeatureExtractor<String> fe = new JPGFeatureExtractor<>(true, true,true);
 
-        String path = "D:\\Final Project\\Files\\JPG\\benign\\";
+        String path = "D:\\Final Project\\Files\\JPG\\malicious\\";
         try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Paths.get(path))) {
             int count = 1;
             for (Path p : directoryStream) {

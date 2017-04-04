@@ -59,11 +59,13 @@ public class RTFParser implements IParser {
         Map<String, Integer> word_count = new HashMap<>();
         Map<String, List<Integer>> word_params = new HashMap<>();
         String file_cont = "";
+
         try {
              file_cont = readFile(path).replace("\\*\\", "\\");
         } catch (Exception e){
             e.printStackTrace();
         }
+
         DataTreeNode root = null;
         int curr_index = 0;
 
@@ -160,7 +162,8 @@ public class RTFParser implements IParser {
                     list.add(new Integer(param.toString()));
                     word_params.put(part[0], list);
                 } catch (Exception e){
-                    System.out.println("Count not parse number " + param.toString());
+
+//                    System.out.println("Could not parse number " + param.toString());
                 }
             }
         } catch (Exception e){

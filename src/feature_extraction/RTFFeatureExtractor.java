@@ -16,11 +16,13 @@ import java.util.Map;
 public class RTFFeatureExtractor<T> extends AFeatureExtractor<T>  {
 
     private boolean _extract_single_joint;
-    private boolean _extract_sub_path;
+    private boolean _extract_top_down_sub;
+    private boolean _extract_bot_up_sub;
 
-    public RTFFeatureExtractor(boolean extract_single_joint, boolean extract_sub_path){
-        this._extract_single_joint = extract_single_joint;
-        this._extract_sub_path = extract_sub_path;
+    public RTFFeatureExtractor(boolean top_down_sub_path, boolean bot_up_sub_path, boolean single_joint){
+        this._extract_single_joint = single_joint;
+        this._extract_top_down_sub = top_down_sub_path;
+        this._extract_bot_up_sub = bot_up_sub_path;
     }
 
     @Override
@@ -59,7 +61,7 @@ public class RTFFeatureExtractor<T> extends AFeatureExtractor<T>  {
             }
         }
 
-        if (this._extract_sub_path && !iterator.isLeaf() && !iterator.isRoot()){
+        if (this._extract_top_down_sub && !iterator.isLeaf() && !iterator.isRoot()){
             for (int i = 0 ; i < available_controls.size(); i++) {
                 addEntry(feature_map, feature + available_controls.get(i));
             }
@@ -68,7 +70,7 @@ public class RTFFeatureExtractor<T> extends AFeatureExtractor<T>  {
         if (iterator.isLeaf()){
 
             //Extract bottom up
-            if (this._extract_sub_path){
+            if (this._extract_bot_up_sub){
                 String bu_feature = available_controls.get(0);
                 DataTreeNode bu_iterator = iterator.getParent();
                 while (!bu_iterator.isRoot()){
