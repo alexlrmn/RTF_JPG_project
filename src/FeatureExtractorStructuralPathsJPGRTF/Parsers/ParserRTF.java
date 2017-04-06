@@ -1,17 +1,22 @@
-package feature_extraction.Parsers;
-import feature_extraction.Metadata.DataTree;
-import feature_extraction.Metadata.DataTreeNode;
-import feature_extraction.Metadata.IMetadata;
-import feature_extraction.Metadata.RTFMetadata;
+package FeatureExtractorStructuralPathsJPGRTF.Parsers;
+import FeatureExtractorStructuralPathsJPGRTF.Metadata.DataTree;
+import FeatureExtractorStructuralPathsJPGRTF.Metadata.DataTreeNode;
+import FeatureExtractorStructuralPathsJPGRTF.Metadata.IMetadata;
+import FeatureExtractorStructuralPathsJPGRTF.Metadata.MetadataRTF;
 
 import java.io.*;
 import java.util.*;
 
-/**
- * Created by Alex on 3/18/2017.
- */
-public class RTFParser implements IParser {
 
+public class ParserRTF implements IParser {
+
+    //<editor-fold desc="Read file">
+    /**
+     * Read the content of a file into a string
+     * @param path The full path to a file
+     * @return
+     * @throws IOException
+     */
     public String readFile(String path) throws IOException {
         BufferedReader br = new BufferedReader(new FileReader(path));
         try {
@@ -20,7 +25,6 @@ public class RTFParser implements IParser {
 
             while (line != null) {
                 sb.append(line);
-//                sb.append("\n");
                 line = br.readLine();
             }
             return sb.toString();
@@ -28,35 +32,20 @@ public class RTFParser implements IParser {
             br.close();
         }
     }
+    //</editor-fold>
 
-//    private String    readFile(String path) {
-//        String file_cont;
-//
-//        File f = new File(path);
-//        if(f.exists() && !f.isDirectory()) {
-//            System.out.println("file exists");
-//        }
-//        else{
-//            System.out.println("file doesn't exist");
-//            return "";
-//        }
-//
-//        try {
-//            Scanner in = new Scanner(new File(path));
-//            file_cont = in.useDelimiter("\\Z").next();
-//            file_cont = file_cont.replace("\n", "").replace("\r", "");
-//
-//        } catch (Exception e) {
-//            System.out.println(e.getMessage());
-//            file_cont = null;
-//        }
-//
-//        return file_cont;
-//    }
-
+    //<editor-fold desc="Parsing">
+    /**
+     *
+     * @param path
+     * @return
+     */
     public  IMetadata Parse(String path) {
 
+        //Hash map, contains features as keys, and number of occurrences as a value
         Map<String, Integer> word_count = new HashMap<>();
+
+        //Hash map, contains features as keys, and a list of parameter encountered for every feature
         Map<String, List<Integer>> word_params = new HashMap<>();
         String file_cont = "";
 
@@ -71,6 +60,7 @@ public class RTFParser implements IParser {
 
         boolean EOF = false;
 
+        //Check if there is a rtf group
         if (file_cont.charAt(0) == '{') {
 
             root = new DataTreeNode("\\root");
@@ -80,12 +70,17 @@ public class RTFParser implements IParser {
             String group_data;
 
             for (int i = 0; i < file_cont.length() && !EOF; i++) {
+
+                //Build group hierarchy
                 switch (file_cont.charAt(i)) {
                     case '{':
+
+                        //Start a new group, save the data encountered so far
                         if (!data.toString().isEmpty()) {
                             group_data = separate_data(word_count, word_params, data.toString());
                             iterator.setData(group_data);
                         }
+
                         parent = iterator;
                         iterator = new DataTreeNode(parent);
                         data = new StringBuilder();
@@ -93,6 +88,7 @@ public class RTFParser implements IParser {
                         break;
                     case '}':
 
+                        //End last group, check if last group is the main rtf group and update relevant parameters
                         if ( iterator.getParent() == null && iterator.getDepth() == 0 ) {
                             if (!EOF)
                                 curr_index = i;
@@ -110,9 +106,12 @@ public class RTFParser implements IParser {
 
                         break;
                     default:
+
+                        //Check if there's data after a closed group and create a separate group for that data
                         if (file_cont.charAt(i-1) == '}'){
                             int j = i;
                             StringBuilder extra_cont = new StringBuilder();
+
                             while (j < file_cont.length() && file_cont.charAt(j) != '}' && file_cont.charAt(j) != '{'){
                                 extra_cont.append(file_cont.charAt(j));
                                 j++;
@@ -136,22 +135,31 @@ public class RTFParser implements IParser {
         }
 
         DataTree dt = new DataTree(root);
-//        dt.writeTree("D:\\temp\\rtf\\tree.txt");
-        IMetadata metadata = new RTFMetadata(dt, curr_index, file_cont, word_count, word_params);
+        IMetadata metadata = new MetadataRTF(dt, curr_index, file_cont.length(), word_count, word_params);
         return metadata;
     }
 
-    private void      addEntry(Map<String, List<Integer>> word_params, Map<String, Integer> word_count, String control_word){
+    private void addEntry(Map<String, List<Integer>> word_params, Map<String, Integer> word_count, String control_word){
+        //Not a control word
         if (control_word.contains("\\'"))
             return;
+
+        //Separate control word from its parameter
         String[] part = control_word.split("(?<=\\D)(?=\\d)");
+
         try{
+
             int count = word_count.containsKey(part[0]) ? word_count.get(part[0]) : 0;
             word_count.put(part[0], count+1);
 
+            //check if control word has parameter
             if (part.length > 1){
+
+                //Get parameter list of the specific control word
                 List<Integer> list = word_params.containsKey(part[0]) ? word_params.get(part[0]) : new ArrayList<>();
                 StringBuilder param = new StringBuilder();
+
+                //Extract the parameter without any spare data that may occur after
                 for (int i = 0; i < part[1].length(); i++){
                     if (tryParse(part[1].charAt(i) + "")){
                         param.append(part[1].charAt(i));
@@ -159,6 +167,8 @@ public class RTFParser implements IParser {
                     else break;
                 }
                 try {
+
+                    //Add param, parameter may be mistaken with data that comes right after control word
                     list.add(new Integer(param.toString()));
                     word_params.put(part[0], list);
                 } catch (Exception e){
@@ -171,7 +181,14 @@ public class RTFParser implements IParser {
         }
     }
 
-    private String    separate_data(Map<String, Integer> word_count, Map<String, List<Integer>> word_params, String data) {
+    /**
+     * Separates control words from rest of the data
+     * @param word_count
+     * @param word_params
+     * @param data
+     * @return
+     */
+    private String separate_data(Map<String, Integer> word_count, Map<String, List<Integer>> word_params, String data) {
 
         StringBuilder group_control_words = new StringBuilder();
         StringBuilder group_data_builder = new StringBuilder();
@@ -183,9 +200,14 @@ public class RTFParser implements IParser {
         for (int i = 0; i < data.length(); i++){
             char curr = data.charAt(i);
 
+            //Check representation of the char
             if (curr == '\\'){
+
+                //Start building a control word
                 build_control_word = true;
                 control_word = control_word_builder.toString();
+
+                //Save previously encountered control words
                 if (!control_word.isEmpty()){
                     addEntry(word_params, word_count, control_word);
                     group_control_words.append("\\" + control_word);
@@ -194,6 +216,7 @@ public class RTFParser implements IParser {
                 control_word_builder = new StringBuilder();
             }
             else if (curr == ' ' && build_control_word){
+                //End of control word building, save control word.
                 build_control_word = false;
                 control_word = control_word_builder.toString();
                 addEntry(word_params, word_count, control_word);
@@ -202,18 +225,22 @@ public class RTFParser implements IParser {
                 control_word_builder = new StringBuilder();
             }
             else if (curr == '\''){
+                //Not a control word
                 build_control_word = false;
                 control_word_builder = new StringBuilder();
             }
             else if (build_control_word){
+                //Build control word, ignore ';'
                 if (curr != ';')
                     control_word_builder.append(curr);
             }
             else {
+                //Regular data
                 group_data_builder.append(curr);
             }
         }
 
+        //Save control word to Hash maps
         if (build_control_word && !control_word_builder.toString().isEmpty()){
             addEntry(word_params, word_count, control_word_builder.toString());
             group_control_words.append("\\" + control_word_builder.toString());
@@ -222,7 +249,12 @@ public class RTFParser implements IParser {
         return group_control_words.append(" ").append(group_data_builder.toString()).toString();
     }
 
-    private boolean   tryParse(String num) {
+    /**
+     * Checks if a specific string represents an Integer
+     * @param num
+     * @return
+     */
+    private boolean tryParse(String num) {
         try {
             int x = Integer.parseInt(num);
             return true;
@@ -230,5 +262,6 @@ public class RTFParser implements IParser {
             return false;
         }
     }
+    //</editor-fold>
 
 }

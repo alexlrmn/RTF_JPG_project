@@ -1,11 +1,9 @@
-package feature_extraction.Metadata;
+package FeatureExtractorStructuralPathsJPGRTF.Metadata;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by Alex on 3/17/2017.
- */
+
 public class DataTreeNode {
 
     private String _data;
@@ -61,9 +59,9 @@ public class DataTreeNode {
         return _depth;
     }
 
-    public boolean equals(DataTreeNode comp){
-        return (this._depth == comp.getDepth() && this._data == comp._data);
-    }
+//    public boolean equals(DataTreeNode comp){
+//        return (this._depth == comp.getDepth() && this._data == comp._data);
+//    }
 
     public String getData() { return this._data; }
 

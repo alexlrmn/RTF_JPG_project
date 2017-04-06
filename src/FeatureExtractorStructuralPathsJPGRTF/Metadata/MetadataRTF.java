@@ -1,32 +1,26 @@
-package feature_extraction.Metadata;
+package FeatureExtractorStructuralPathsJPGRTF.Metadata;
 
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created by Alex on 3/28/2017.
- */
-public class RTFMetadata extends AMetadata {
 
-    private String _data;
+public class MetadataRTF extends AMetadata {
+
     private Map<String, Integer> _word_count;
     private Map<String, List<Integer>> _word_params;
 
-    public RTFMetadata(DataTree tree, int eof_index, String data,
+    public MetadataRTF(DataTree tree, int eof_index, int file_length,
                        Map<String, Integer> word_count, Map<String, List<Integer>> word_params) {
-        super(tree, eof_index);
-        this._data = data;
+        super(tree, eof_index, file_length);
         this._word_count = word_count;
         this._word_params = word_params;
-
-        writeToFile("D:\\temp\\rtf");
     }
 
     @Override
     public boolean isEOF() {
-        return _eof_index == _data.length();
+        return _eof_index == super._file_length;
     }
 
     private void writeToFile(String path) {

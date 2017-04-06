@@ -1,12 +1,10 @@
-package feature_extraction.Metadata;
+package FeatureExtractorStructuralPathsJPGRTF.Metadata;
 
 
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 
-/**
- * Created by Alex on 3/17/2017.
- */
+
 public class DataTree {
     private DataTreeNode _root;
 
@@ -22,6 +20,10 @@ public class DataTree {
 
     private StringBuilder sb;
 
+    /**
+     * Writes the tree to a specific file for visualization.
+     * @param path
+     */
     public void writeTree(String path) {
         this.sb = new StringBuilder();
         writeTreeRec(this._root);
@@ -33,7 +35,7 @@ public class DataTree {
         }
     }
 
-    public void writeTreeRec(DataTreeNode it) {
+    private void writeTreeRec(DataTreeNode it) {
         this.sb.append(it.indented()).append(it.getData()).append("\n");
         if (it.getChildren().size() != 0) {
 
