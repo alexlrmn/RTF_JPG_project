@@ -1,9 +1,9 @@
-package FeatureExtractorStructuralPathsJPGRTF;
+package FeatureExtraction.FeatureExtractorStructuralPathsJPGRTF;
 
-import FeatureExtractorStructuralPathsJPGRTF.Metadata.DataTreeNode;
-import FeatureExtractorStructuralPathsJPGRTF.Metadata.IMetadata;
-import FeatureExtractorStructuralPathsJPGRTF.Parsers.IParser;
-import FeatureExtractorStructuralPathsJPGRTF.Parsers.ParserRTF;
+import FeatureExtraction.FeatureExtractorStructuralPathsJPGRTF.Metadata.DataTreeNode;
+import FeatureExtraction.FeatureExtractorStructuralPathsJPGRTF.Metadata.IMetadata;
+import FeatureExtraction.FeatureExtractorStructuralPathsJPGRTF.Parsers.IParser;
+import FeatureExtraction.FeatureExtractorStructuralPathsJPGRTF.Parsers.ParserRTF;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,6 +19,8 @@ public class FeatureExtractorRTF<T> extends AFeatureExtractor<T>  {
     private boolean _extract_top_down_sub;
     private boolean _extract_bot_up_sub;
 
+    private Map<String, Integer> _feature_map;
+
     public FeatureExtractorRTF(boolean top_down_sub_path, boolean bot_up_sub_path, boolean single_joint){
         this._extract_single_joint = single_joint;
         this._extract_top_down_sub = top_down_sub_path;
@@ -33,19 +35,18 @@ public class FeatureExtractorRTF<T> extends AFeatureExtractor<T>  {
         IMetadata metadata = rtf.Parse((String)element);
 
         //Extract features
-        Map<String, Integer> feature_map =  new HashMap<>();
-        ExtractStructuralFeaturesRec(feature_map, metadata.getTree().getRoot(), "");
+        _feature_map =  new HashMap<>();
+        ExtractStructuralFeaturesRec(metadata.getTree().getRoot(), "");
 
-        return feature_map;
+        return _feature_map;
     }
 
     /**
      * Extract features while iterating over the Tree constructed while parsing the file
-     * @param feature_map Map containing features as a key and number of occurrences as a value
      * @param iterator Current tree node
      * @param feature Constructed full path feature
      */
-    private void ExtractStructuralFeaturesRec(Map<String, Integer> feature_map, DataTreeNode iterator, String feature){
+    private void ExtractStructuralFeaturesRec(DataTreeNode iterator, String feature){
 
         //Split control words from other data in the node
         String control_words_data = getControlWords(iterator.getData());
@@ -74,14 +75,14 @@ public class FeatureExtractorRTF<T> extends AFeatureExtractor<T>  {
             //Save single control words in case the parameter is set to true
             if (this._extract_single_joint) {
                 for (int i = 1; i < control_words.length; i++) {
-                    addEntry(feature_map, "/" + control_words[i]);
+                    addEntry("/" + control_words[i]);
                 }
             }
 
             //Save the path which is a sub of the full path up to this node
             if (this._extract_top_down_sub && !iterator.isLeaf() && !iterator.isRoot()) {
                 for (int i = 0; i < available_controls.size(); i++) {
-                    addEntry(feature_map, feature + available_controls.get(i));
+                    addEntry(feature + available_controls.get(i));
                 }
             }
 
@@ -97,13 +98,13 @@ public class FeatureExtractorRTF<T> extends AFeatureExtractor<T>  {
                     //Back track the path using each node's parent node until root is reached
                     try {
 
-                        while (bu_iterator != null && !bu_iterator.isRoot()) {// && feature_map.size() < 350000) {
+                        while (bu_iterator != null && !bu_iterator.isRoot()){ // && feature_map.size() < 350000) {
 
                             String it_feature = "/" + getControlWords(bu_iterator.getData()).split("\\\\")[1];
 
                             temp = new StringBuilder(it_feature).append(bu_feature_builder);
                             bu_feature_builder = temp;
-                            addEntry(feature_map, bu_feature_builder.toString());
+                            addEntry(bu_feature_builder.toString());
                             bu_iterator = bu_iterator.getParent();
 
                         }
@@ -115,7 +116,7 @@ public class FeatureExtractorRTF<T> extends AFeatureExtractor<T>  {
 
                 //Add all available full paths
                 for (int i = 0; i < available_controls.size(); i++) {
-                    addEntry(feature_map, feature + available_controls.get(i));
+                    addEntry(feature + available_controls.get(i));
                 }
 
             }
@@ -125,15 +126,15 @@ public class FeatureExtractorRTF<T> extends AFeatureExtractor<T>  {
 
         //Continue the recursive next iteration
         for (DataTreeNode child : iterator.getChildren()){
-            ExtractStructuralFeaturesRec(feature_map, child, feature);
+            ExtractStructuralFeaturesRec(child, feature);
         }
     }
 
 
 
-    private void addEntry(Map<String, Integer> feature_map, String feature) {
-        int count = feature_map.containsKey(feature) ? feature_map.get(feature) : 0;
-        feature_map.put(feature, count+1);
+    private void addEntry(String feature) {
+        int count = _feature_map.containsKey(feature) ? _feature_map.get(feature) : 0;
+        _feature_map.put(feature, count+1);
     }
 
 

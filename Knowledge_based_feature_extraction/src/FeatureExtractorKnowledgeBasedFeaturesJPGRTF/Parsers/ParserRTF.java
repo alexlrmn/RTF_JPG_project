@@ -1,11 +1,18 @@
-package FeatureExtractorStructuralPathsJPGRTF.Parsers;
-import FeatureExtractorStructuralPathsJPGRTF.Metadata.DataTree;
-import FeatureExtractorStructuralPathsJPGRTF.Metadata.DataTreeNode;
-import FeatureExtractorStructuralPathsJPGRTF.Metadata.IMetadata;
-import FeatureExtractorStructuralPathsJPGRTF.Metadata.MetadataRTF;
+package FeatureExtractorKnowledgeBasedFeaturesJPGRTF.Parsers;
 
-import java.io.*;
-import java.util.*;
+
+import FeatureExtractorKnowledgeBasedFeaturesJPGRTF.Metadata.DataTree;
+import FeatureExtractorKnowledgeBasedFeaturesJPGRTF.Metadata.DataTreeNode;
+import FeatureExtractorKnowledgeBasedFeaturesJPGRTF.Metadata.IMetadata;
+import FeatureExtractorKnowledgeBasedFeaturesJPGRTF.Metadata.MetadataRTF;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 public class ParserRTF implements IParser {
@@ -40,7 +47,7 @@ public class ParserRTF implements IParser {
      * @param path
      * @return
      */
-    public  IMetadata Parse(String path) {
+    public IMetadata Parse(String path) {
 
         //Hash map, contains features as keys, and number of occurrences as a value
         Map<String, Integer> word_count = new HashMap<>();
@@ -63,7 +70,7 @@ public class ParserRTF implements IParser {
         //Check if there is a rtf group
         if (file_cont.charAt(0) == '{') {
 
-            root = new DataTreeNode("\\root");
+            root = new DataTreeNode("");
             DataTreeNode parent;
             DataTreeNode iterator = root;
             StringBuilder data = new StringBuilder();

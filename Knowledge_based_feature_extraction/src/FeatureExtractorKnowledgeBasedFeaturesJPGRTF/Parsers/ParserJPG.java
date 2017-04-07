@@ -1,9 +1,9 @@
-package FeatureExtractorStructuralPathsJPGRTF.Parsers;
+package FeatureExtractorKnowledgeBasedFeaturesJPGRTF.Parsers;
 
-import FeatureExtractorStructuralPathsJPGRTF.Metadata.DataTree;
-import FeatureExtractorStructuralPathsJPGRTF.Metadata.DataTreeNode;
-import FeatureExtractorStructuralPathsJPGRTF.Metadata.IMetadata;
-import FeatureExtractorStructuralPathsJPGRTF.Metadata.MetadataJPG;
+import FeatureExtractorKnowledgeBasedFeaturesJPGRTF.Metadata.DataTree;
+import FeatureExtractorKnowledgeBasedFeaturesJPGRTF.Metadata.DataTreeNode;
+import FeatureExtractorKnowledgeBasedFeaturesJPGRTF.Metadata.IMetadata;
+import FeatureExtractorKnowledgeBasedFeaturesJPGRTF.Metadata.MetadataJPG;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -74,7 +74,7 @@ public class ParserJPG implements IParser {
         String last_marker = "";
         StringBuilder buffer = new StringBuilder();
 
-        DataTreeNode root = new DataTreeNode("/image");
+        DataTreeNode root = new DataTreeNode("");
         DataTreeNode iterator = root;
         DataTreeNode parent = null;
 

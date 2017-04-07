@@ -1,15 +1,13 @@
 package test;
 
-import FeatureExtractorStructuralPathsJPGRTF.IFeatureExtractor;
-import FeatureExtractorStructuralPathsJPGRTF.FeatureExtractorJPG;
-import FeatureExtractorStructuralPathsJPGRTF.Metadata.IMetadata;
-import FeatureExtractorStructuralPathsJPGRTF.Parsers.IParser;
-import FeatureExtractorStructuralPathsJPGRTF.Parsers.ParserRTF;
-import FeatureExtractorStructuralPathsJPGRTF.FeatureExtractorRTF;
+import FeatureExtraction.FeatureExtractorStructuralPathsJPGRTF.IFeatureExtractor;
+import FeatureExtraction.FeatureExtractorStructuralPathsJPGRTF.FeatureExtractorJPG;
+import FeatureExtraction.FeatureExtractorStructuralPathsJPGRTF.Metadata.IMetadata;
+import FeatureExtraction.FeatureExtractorStructuralPathsJPGRTF.Parsers.IParser;
+import FeatureExtraction.FeatureExtractorStructuralPathsJPGRTF.Parsers.ParserRTF;
+import FeatureExtraction.FeatureExtractorStructuralPathsJPGRTF.FeatureExtractorRTF;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -22,11 +20,8 @@ public class Program {
         String jpg_path_test = "D:\\Final Project\\Files\\JPG\\test\\";
         String rtf_path_test = "D:\\Final Project\\files\\RTF\\test\\";
 
-//        testRTFFeatureExtractor(rtf_path_test);
-//        testJPGFeatureExtractor(jpg_path_test);
-        IFeatureExtractor<String> f = new FeatureExtractorRTF<>(true, true, true);
-        f.ExtractFeaturesFrequencyFromSingleElement("D:\\Final Project\\Files\\RTF\\7edd2855fbdb40bd3b1d688b2d3f3f18765587f0e5c55e20ac6e363c6bed4390");
-        System.out.println("wgw");
+        testFeatureExtractorRTF(rtf_path_test);
+        testFeatureExtractorJPG(jpg_path_test);
     }
 
     public static void testRTFParser(String path) {
@@ -35,7 +30,7 @@ public class Program {
         System.out.println();
     }
 
-    public static void testRTFFeatureExtractor(String path){
+    public static void testFeatureExtractorRTF(String path){
         IFeatureExtractor<String> fe = new FeatureExtractorRTF<>(true, true, true);
         List<Integer> ss = new ArrayList<>();
         try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Paths.get(path))) {
@@ -64,12 +59,12 @@ public class Program {
         }
 
         Collections.sort(ss);
-        System.out.println();
+        System.out.println("done rtf");
 
 
     }
 
-    public static void testJPGFeatureExtractor(String path) {
+    public static void testFeatureExtractorJPG(String path) {
 
         IFeatureExtractor<String> fe = new FeatureExtractorJPG<>(true, true,true);
 
@@ -93,11 +88,11 @@ public class Program {
                 count++;
             }
 
-            System.out.println(count);
         } catch (IOException ex) {
             ex.printStackTrace();
         }
 
+        System.out.println("done jpg");
 
 
     }

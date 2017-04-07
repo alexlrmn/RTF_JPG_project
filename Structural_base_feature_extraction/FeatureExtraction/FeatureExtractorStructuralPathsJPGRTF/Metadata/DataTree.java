@@ -1,4 +1,4 @@
-package FeatureExtractorStructuralPathsJPGRTF.Metadata;
+package FeatureExtraction.FeatureExtractorStructuralPathsJPGRTF.Metadata;
 
 
 import java.io.FileNotFoundException;

@@ -1,4 +1,4 @@
-package FeatureExtractorStructuralPathsJPGRTF;
+package FeatureExtraction.FeatureExtractorStructuralPathsJPGRTF;
 
 import java.io.Serializable;
 import java.util.Map;

@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/Knowledge_based_feature_extraction/Knowledge_based_feature_extraction.iml" filepath="$PROJECT_DIR$/Knowledge_based_feature_extraction/Knowledge_based_feature_extraction.iml" />
       <module fileurl="file://$PROJECT_DIR$/RTF_JPG_project.iml" filepath="$PROJECT_DIR$/RTF_JPG_project.iml" />
     </modules>
   </component>

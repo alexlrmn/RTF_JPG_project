@@ -1,8 +1,7 @@
-package FeatureExtractorStructuralPathsJPGRTF.Metadata;
+package FeatureExtractorKnowledgeBasedFeaturesJPGRTF.Metadata;
 
 
 
-import java.util.List;
 import java.util.Map;
 
 

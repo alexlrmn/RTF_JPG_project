@@ -1,9 +1,9 @@
-package FeatureExtractorStructuralPathsJPGRTF;
+package FeatureExtraction.FeatureExtractorStructuralPathsJPGRTF;
 
-import FeatureExtractorStructuralPathsJPGRTF.Metadata.DataTreeNode;
-import FeatureExtractorStructuralPathsJPGRTF.Metadata.IMetadata;
-import FeatureExtractorStructuralPathsJPGRTF.Parsers.IParser;
-import FeatureExtractorStructuralPathsJPGRTF.Parsers.ParserJPG;
+import FeatureExtraction.FeatureExtractorStructuralPathsJPGRTF.Metadata.DataTreeNode;
+import FeatureExtraction.FeatureExtractorStructuralPathsJPGRTF.Metadata.IMetadata;
+import FeatureExtraction.FeatureExtractorStructuralPathsJPGRTF.Parsers.IParser;
+import FeatureExtraction.FeatureExtractorStructuralPathsJPGRTF.Parsers.ParserJPG;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,6 +16,8 @@ public class FeatureExtractorJPG<T> extends AFeatureExtractor<T> {
     private boolean _extract_single_joint;
     private boolean _extract_top_down_sub;
     private boolean _extract_bot_up_sub;
+
+    private Map<String, Integer> _feature_map;
 
     public FeatureExtractorJPG(boolean top_down_sub, boolean bot_up_sub, boolean single_joint){
         this._extract_single_joint = single_joint;
@@ -30,32 +32,31 @@ public class FeatureExtractorJPG<T> extends AFeatureExtractor<T> {
 
         //Parse file
         IMetadata metadata = parser.Parse((String)element);
-        Map<String, Integer> feature_map = new HashMap<>();
+        _feature_map = new HashMap<>();
 
         //Extract features
-        ExtractHierarchicalFeaturesRec(feature_map, metadata.getTree().getRoot(), new String());
-        return feature_map;
+        ExtractHierarchicalFeaturesRec(metadata.getTree().getRoot(), new String());
+        return _feature_map;
     }
 
     /**
      * Iterates over the Tree constructed by the parser and extract features.
-     * @param feature_map Hash map containing the features as keys, and number of appearances as a value
      * @param iterator Current node
      * @param feature Current feature constructed up until now
      */
-    private void ExtractHierarchicalFeaturesRec(Map<String, Integer> feature_map, DataTreeNode iterator, String feature){
+    private void ExtractHierarchicalFeaturesRec(DataTreeNode iterator, String feature){
 
         String curr_marker = getMarker(iterator.getData());
         String curr_feature = feature + curr_marker;
 
         //Add single marker to map
         if (_extract_single_joint && !iterator.isRoot()){
-            addEntry(feature_map, curr_marker);
+            addEntry(curr_marker);
         }
 
         //Add sub path observed this far
         if (_extract_top_down_sub && !iterator.isLeaf() && !iterator.isRoot()) {
-            addEntry(feature_map, curr_feature);
+            addEntry(curr_feature);
         }
 
         if (iterator.isLeaf()){
@@ -68,7 +69,7 @@ public class FeatureExtractorJPG<T> extends AFeatureExtractor<T> {
                     try {
                         bu_feature = getMarker(bu_iterator.getData()) + bu_feature;
                         bu_iterator = bu_iterator.getParent();
-                        addEntry(feature_map, bu_feature);
+                        addEntry(bu_feature);
                     } catch (Exception e){
                         e.printStackTrace();
                     }
@@ -77,14 +78,14 @@ public class FeatureExtractorJPG<T> extends AFeatureExtractor<T> {
             }
 
             //Add full path to map
-            addEntry(feature_map, curr_feature);
+            addEntry(curr_feature);
 
         }
 
         else {
             //Continue recursive iteration
             for (DataTreeNode child : iterator.getChildren()) {
-                ExtractHierarchicalFeaturesRec(feature_map, child, curr_feature);
+                ExtractHierarchicalFeaturesRec(child, curr_feature);
             }
         }
     }
@@ -105,9 +106,9 @@ public class FeatureExtractorJPG<T> extends AFeatureExtractor<T> {
         return marker;
     }
 
-    private void addEntry(Map<String, Integer> feature_map, String feature){
-        int count = feature_map.containsKey(feature) ? feature_map.get(feature) : 0;
-        feature_map.put(feature, count+1);
+    private void addEntry(String feature){
+        int count = _feature_map.containsKey(feature) ? _feature_map.get(feature) : 0;
+        _feature_map.put(feature, count+1);
     }
 
 
@@ -115,4 +116,7 @@ public class FeatureExtractorJPG<T> extends AFeatureExtractor<T> {
     public String GetName() {
         return "JPG Structural Features";
     }
+
+
+
 }

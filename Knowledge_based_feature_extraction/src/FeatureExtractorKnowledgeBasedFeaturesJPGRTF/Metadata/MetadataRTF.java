@@ -1,4 +1,4 @@
-package FeatureExtractorStructuralPathsJPGRTF.Metadata;
+package FeatureExtractorKnowledgeBasedFeaturesJPGRTF.Metadata;
 
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;

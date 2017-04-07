@@ -1,4 +1,4 @@
-package FeatureExtractorStructuralPathsJPGRTF.Metadata;
+package FeatureExtractorKnowledgeBasedFeaturesJPGRTF.Metadata;
 
 
 public abstract class AMetadata implements IMetadata{
