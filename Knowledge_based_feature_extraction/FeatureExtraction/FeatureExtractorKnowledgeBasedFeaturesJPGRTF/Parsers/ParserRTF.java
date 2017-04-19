@@ -1,10 +1,10 @@
-package FeatureExtractorKnowledgeBasedFeaturesJPGRTF.Parsers;
+package FeatureExtraction.FeatureExtractorKnowledgeBasedFeaturesJPGRTF.Parsers;
 
 
-import FeatureExtractorKnowledgeBasedFeaturesJPGRTF.Metadata.DataTree;
-import FeatureExtractorKnowledgeBasedFeaturesJPGRTF.Metadata.DataTreeNode;
-import FeatureExtractorKnowledgeBasedFeaturesJPGRTF.Metadata.IMetadata;
-import FeatureExtractorKnowledgeBasedFeaturesJPGRTF.Metadata.MetadataRTF;
+import FeatureExtraction.FeatureExtractorKnowledgeBasedFeaturesJPGRTF.Metadata.DataTree;
+import FeatureExtraction.FeatureExtractorKnowledgeBasedFeaturesJPGRTF.Metadata.DataTreeNode;
+import FeatureExtraction.FeatureExtractorKnowledgeBasedFeaturesJPGRTF.Metadata.IMetadata;
+import FeatureExtraction.FeatureExtractorKnowledgeBasedFeaturesJPGRTF.Metadata.MetadataRTF;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

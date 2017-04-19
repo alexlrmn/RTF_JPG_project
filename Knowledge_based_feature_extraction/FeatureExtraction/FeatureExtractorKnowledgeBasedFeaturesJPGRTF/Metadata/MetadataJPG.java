@@ -1,4 +1,4 @@
-package FeatureExtractorKnowledgeBasedFeaturesJPGRTF.Metadata;
+package FeatureExtraction.FeatureExtractorKnowledgeBasedFeaturesJPGRTF.Metadata;
 
 
 

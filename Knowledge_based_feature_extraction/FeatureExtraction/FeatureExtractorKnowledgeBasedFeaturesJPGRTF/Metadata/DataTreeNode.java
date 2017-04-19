@@ -1,4 +1,4 @@
-package FeatureExtraction.FeatureExtractorStructuralPathsJPGRTF.Metadata;
+package FeatureExtraction.FeatureExtractorKnowledgeBasedFeaturesJPGRTF.Metadata;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,6 +59,9 @@ public class DataTreeNode {
         return _depth;
     }
 
+//    public boolean equals(DataTreeNode comp){
+//        return (this._depth == comp.getDepth() && this._data == comp._data);
+//    }
 
     public String getData() { return this._data; }
 
@@ -83,8 +86,4 @@ public class DataTreeNode {
     public boolean isRoot() { return this._depth == 0; }
 
     public boolean isLeaf() { return this._children.size() == 0; }
-
-
 }
-
-

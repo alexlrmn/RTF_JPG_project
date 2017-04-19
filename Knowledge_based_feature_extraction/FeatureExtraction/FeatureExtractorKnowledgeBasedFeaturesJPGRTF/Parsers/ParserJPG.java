@@ -1,9 +1,9 @@
-package FeatureExtractorKnowledgeBasedFeaturesJPGRTF.Parsers;
+package FeatureExtraction.FeatureExtractorKnowledgeBasedFeaturesJPGRTF.Parsers;
 
-import FeatureExtractorKnowledgeBasedFeaturesJPGRTF.Metadata.DataTree;
-import FeatureExtractorKnowledgeBasedFeaturesJPGRTF.Metadata.DataTreeNode;
-import FeatureExtractorKnowledgeBasedFeaturesJPGRTF.Metadata.IMetadata;
-import FeatureExtractorKnowledgeBasedFeaturesJPGRTF.Metadata.MetadataJPG;
+import FeatureExtraction.FeatureExtractorKnowledgeBasedFeaturesJPGRTF.Metadata.DataTree;
+import FeatureExtraction.FeatureExtractorKnowledgeBasedFeaturesJPGRTF.Metadata.DataTreeNode;
+import FeatureExtraction.FeatureExtractorKnowledgeBasedFeaturesJPGRTF.Metadata.IMetadata;
+import FeatureExtraction.FeatureExtractorKnowledgeBasedFeaturesJPGRTF.Metadata.MetadataJPG;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -42,7 +42,7 @@ public class ParserJPG implements IParser {
         markers.put("c9", "SOF");
         markers.put("ca", "SOF");
         markers.put("cb", "SOF");
-        markers.put("cc", "SOF");
+        markers.put("cd", "SOF");
         markers.put("ce", "SOF");
         markers.put("cf", "SOF");
         for (int i = 0; i < 8; i++)
