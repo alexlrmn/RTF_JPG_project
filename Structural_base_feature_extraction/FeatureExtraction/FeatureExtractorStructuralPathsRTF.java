@@ -20,20 +20,72 @@ public class FeatureExtractorStructuralPathsRTF<T> extends AFeatureExtractor<T> 
     }
 
     public FeatureExtractorStructuralPathsRTF(boolean top_down_sub_path, boolean bot_up_sub_path, boolean single_joint) {
-        this._extract_single_joint = single_joint;
         this._extract_top_down_sub = top_down_sub_path;
         this._extract_bot_up_sub = bot_up_sub_path;
+        this._extract_single_joint = single_joint;
+    }
+
+    public void setExtract_top_down_sub(boolean _extract_top_down_sub) {
+        this._extract_top_down_sub = _extract_top_down_sub;
+    }
+
+    public void setExtract_bot_up_sub(boolean _extract_bot_up_sub) {
+        this._extract_bot_up_sub = _extract_bot_up_sub;
+    }
+
+    public void setExtract_single_joint(boolean _extract_single_joint) {
+        this._extract_single_joint = _extract_single_joint;
     }
 
     @Override
+    public String GetName() {
+        //return this._NAME;
+        String etd = _extract_top_down_sub == true ? "T" : "F";
+        String ebu = _extract_bot_up_sub == true ? "T" : "F";
+        String esj = _extract_single_joint == true ? "T" : "F";
+        return String.format("%s - %s%s%s", _NAME, etd, ebu, esj);
+    }
+
+//    public Map<String, Integer> ExtractFeaturesFrequencyFromSingleElement(T element) {
+//
+//        //Parse file
+//        Parser rtf = new Parser();
+//        Data data = rtf.Parse((String) element);
+//
+//        //print tree for debugging
+//        String[] splits = ((String)element).split("\\\\");
+//        String el_name = splits[splits.length - 1];
+//        String path = "";
+//        for (int i =0 ; i < splits.length - 2  ; i++){
+//            path += splits[i] + "\\";
+//        }
+//
+//        path += "tree\\" + el_name + ".txt";
+//        data.writeTree(path);
+//
+//        //Extract features
+//        _feature_map = new HashMap<>();
+//        ExtractStructuralFeaturesRec(data, "");
+//
+//        return _feature_map;
+//    }
+//    @Override
     public Map<String, Integer> ExtractFeaturesFrequencyFromSingleElement(T element) {
 
         //Parse file
         Parser rtf = new Parser();
         Data data = rtf.Parse((String) element);
 
-//        data.writeTree(element + ".txt");
-
+        //print tree for debugging
+//        String[] splits = ((String)element).split("\\\\");
+//        String el_name = splits[splits.length - 1];
+//        String path = "";
+//        for (int i =0 ; i < splits.length - 2  ; i++){
+//            path += splits[i] + "\\";
+//        }
+//
+//        path += "tree\\" + el_name + ".txt";
+//        data.writeTree(path);
         //Extract features
         _feature_map = new HashMap<>();
         ExtractStructuralFeaturesRec(data, "");
@@ -96,12 +148,13 @@ public class FeatureExtractorStructuralPathsRTF<T> extends AFeatureExtractor<T> 
                     //Back track the path using each node's parent node until root is reached
                     try {
 
-                        while (bu_iterator != null && !bu_iterator.isRoot()) { // && feature_map.size() < 350000) {
+                        while (bu_iterator != null && !bu_iterator.isRoot()) {
 
                             String[] temp_control_words = getControlWords(bu_iterator.getData()).split("\\\\");
                             String it_feature = "";
-                            if (temp_control_words.length > 1)
+                            if (temp_control_words.length > 1) {
                                 it_feature = "/" + temp_control_words[1];
+                            }
 
                             temp = new StringBuilder(it_feature).append(bu_feature_builder);
                             bu_feature_builder = temp;
@@ -153,12 +206,11 @@ public class FeatureExtractorStructuralPathsRTF<T> extends AFeatureExtractor<T> 
         StringBuilder sb = new StringBuilder();
         try {
             //split control word and data
-            for (int i = 0 ; i < data.length() ; i++){
-                if (data.charAt(i) != ' '){
+            for (int i = 0; i < data.length(); i++) {
+                if (data.charAt(i) != ' ') {
                     sb.append(data.charAt(i));
                     //control_words.concat(data.charAt(i) + "");
-                }
-                else {
+                } else {
                     break;
                 }
 
@@ -169,17 +221,12 @@ public class FeatureExtractorStructuralPathsRTF<T> extends AFeatureExtractor<T> 
             if (data_ray.length > 0) {
                 control_words = data.split(" ")[0];
             }
-            */
+             */
         } catch (Exception e) {
             System.out.println("An Error occurred while trying to extract control_words.");
         }
 
         return control_words;
-    }
-
-    @Override
-    public String GetName() {
-        return this._NAME;
     }
 
     private class Parser {
@@ -192,23 +239,37 @@ public class FeatureExtractorStructuralPathsRTF<T> extends AFeatureExtractor<T> 
          * @return
          * @throws IOException
          */
-        private String readFile(String path) throws IOException {
+        private char[] readFile(String path) throws FileNotFoundException {
             BufferedReader br = new BufferedReader(new FileReader(path));
             try {
+                String str;
                 StringBuilder sb = new StringBuilder();
-                String line = br.readLine();
-
-                while (line != null) {
-                    sb.append(line);
-                    line = br.readLine();
+                while ((str = br.readLine()) != null) {
+                    sb.append(str);
                 }
-                return sb.toString();
-            } finally {
-                br.close();
+                return sb.toString().toCharArray();//replace("\\*\\", "\\").replace("*", "").
+            } catch (IOException e) {
+                e.printStackTrace();
             }
+            return null;
         }
-        //</editor-fold>
 
+//        private String readFile1(String path) throws IOException {
+//            BufferedReader br = new BufferedReader(new FileReader(path));
+//            try {
+//                StringBuilder sb = new StringBuilder();
+//                String line = br.readLine();
+//
+//                while (line != null) {
+//                    sb.append(line);
+//                    line = br.readLine();
+//                }
+//                return sb.toString();
+//            } finally {
+//                br.close();
+//            }
+//        }
+        //</editor-fold>
         //<editor-fold desc="Parsing">
         /**
          * Parse a file of type RTF using its parentheses which represent a
@@ -219,83 +280,72 @@ public class FeatureExtractorStructuralPathsRTF<T> extends AFeatureExtractor<T> 
          */
         private Data Parse(String path) {
 
-            String file_cont = "";
+            char[] file_cont = new char[0];
 
             try {
-                file_cont = readFile(path).replace("\\*\\", "\\");
-            } catch (Exception e) {
+                file_cont = readFile(path);
+            } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
 
-            Data root;
-
-            boolean EOF = false;
-
-            //Check if there is a rtf group
-            root = new Data("");
+            Data root = new Data();
             Data parent;
             Data iterator = root;
             StringBuilder data = new StringBuilder();
             String group_data;
 
-            for (int i = 0; i < file_cont.length() ; i++) { //&& !EOF
-
-                //Build group hierarchy
-                switch (file_cont.charAt(i)) {
+            for (int i = 0; i < file_cont.length; i++) {
+                switch (file_cont[i]) {
                     case '{':
 
-                        //Start a new group, save the data encountered so far
-                        if (!data.toString().isEmpty()) {
-                            group_data = separate_data(data.toString());
-                            iterator.setData(group_data);
-                        }
+                        //Test
 
-                        parent = iterator;
-                        iterator = new Data(parent);
-                        data = new StringBuilder();
+                        if (!data.toString().isEmpty() &&  !data.toString().replaceAll("[^a-zA-Z0-9]+", "").isEmpty()) {
+                            parent = iterator;
+                            group_data = separate_data(data.toString());
+                            iterator = new Data(group_data, parent);
+                            data = new StringBuilder();
+                        }
 
                         break;
                     case '}':
 
-                        //End last group, check if last group is the main rtf group and update relevant parameters
-                        if (iterator.isRoot()){
-                            EOF = true;
-                            break;
+                        if (!data.toString().isEmpty() && !((data.toString()).replaceAll("[^a-zA-Z0-9]+", "")).isEmpty()) {
+                            group_data = separate_data(data.toString());
+                            Data node = new Data(group_data, iterator);
+                            data = new StringBuilder();
+                        } else {
+                            data = new StringBuilder();
+                            if (!iterator.isRoot()) {
+                                iterator = iterator.getParent();
+                            }
                         }
-
-                        if (iterator.getParent().isRoot()) {
-                            EOF = true;
-                            break;
-                        }
-
-                        group_data = separate_data(data.toString());
-                        iterator.setData(group_data);
-
-                        iterator = iterator.getParent();
-                        data = new StringBuilder();
 
                         break;
                     default:
 
                         //Check if there's data after a closed group and create a separate group for that data
-                        if (i != 0 && file_cont.charAt(i - 1) == '}') {
+                        if (i != 0 && file_cont[i - 1] == '}') {
                             int j = i;
                             StringBuilder extra_cont = new StringBuilder();
 
-                            while (j < file_cont.length() && file_cont.charAt(j) != '}' && file_cont.charAt(j) != '{') {
-                                extra_cont.append(file_cont.charAt(j));
+                            while (j < file_cont.length && file_cont[j] != '}' && file_cont[j] != '{') {
+                                extra_cont.append(file_cont[j]);
                                 j++;
                             }
 
                             i = j - 1;
-                            group_data = separate_data(extra_cont.toString());
-                            parent = iterator;
-                            iterator = new Data(group_data, parent);
-                            iterator = iterator.getParent();
+                            if (extra_cont.toString().isEmpty() && (!((extra_cont.toString().replaceAll("[^a-zA-Z0-9]+", "")).isEmpty()))) {
+                                group_data = separate_data(extra_cont.toString());
+                                parent = iterator;
+                                iterator = new Data(group_data, parent);
+                                iterator = iterator.getParent();
+                            }
+
                             break;
                         }
 
-                        char curr = file_cont.charAt(i);
+                        char curr = file_cont[i];
                         data.append(curr);
 
                         break;
@@ -305,6 +355,87 @@ public class FeatureExtractorStructuralPathsRTF<T> extends AFeatureExtractor<T> 
             return root;
         }
 
+//        private Data Parse(String path) {
+//
+//            String file_cont = "";
+//
+//            try {
+//                file_cont = readFile1(path).replace("\\*\\", "\\");
+//                file_cont = file_cont.replace("*", "");
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//
+//            Data root;
+//
+//            boolean EOF = false;
+//
+//            root = new Data("");
+//            Data parent;
+//            Data iterator = root;
+//            StringBuilder data = new StringBuilder();
+//            String group_data;
+//
+//            for (int i = 0; i < file_cont.length() ; i++) { //&& !EOF
+//
+//                //Build group hierarchy
+//                switch (file_cont.charAt(i)) {
+//                    case '{':
+//
+//                        //Test
+//                        if (!data.toString().isEmpty() && !data.toString().replaceAll("\\s+","").isEmpty()){
+//                            parent = iterator;
+//                            group_data = separate_data(data.toString());
+//                            iterator = new Data(group_data, parent);
+//                            data = new StringBuilder();
+//                        }
+//
+//
+//                        break;
+//                    case '}':
+//
+//                        if (!data.toString().isEmpty() && !((data.toString()).replaceAll("\\s+","")).isEmpty()) {
+//                            group_data = separate_data(data.toString());
+//                            Data node = new Data(group_data, iterator);
+//                            data = new StringBuilder();
+//                        }
+//
+//                        else {
+//                            data = new StringBuilder();
+//                            if (!iterator.isRoot())
+//                                iterator = iterator.getParent();
+//                        }
+//
+//                        break;
+//                    default:
+//
+//                        //Check if there's data after a closed group and create a separate group for that data
+//                        if (i != 0 && file_cont.charAt(i - 1) == '}') {
+//                            int j = i;
+//                            StringBuilder extra_cont = new StringBuilder();
+//
+//                            while (j < file_cont.length() && file_cont.charAt(j) != '}' && file_cont.charAt(j) != '{') {
+//                                extra_cont.append(file_cont.charAt(j));
+//                                j++;
+//                            }
+//
+//                            i = j - 1;
+//                            group_data = separate_data(extra_cont.toString());
+//                            parent = iterator;
+//                            iterator = new Data(group_data, parent);
+//                            iterator = iterator.getParent();
+//                            break;
+//                        }
+//
+//                        char curr = file_cont.charAt(i);
+//                        data.append(curr);
+//
+//                        break;
+//                }
+//            }
+//
+//            return root;
+//        }
         /**
          * Separates control words from rest of the data
          *
@@ -315,7 +446,7 @@ public class FeatureExtractorStructuralPathsRTF<T> extends AFeatureExtractor<T> 
         private String separate_data(String data) {
 
             StringBuilder group_control_words = new StringBuilder();
-            StringBuilder group_data_builder = new StringBuilder();
+//            StringBuilder group_data_builder = new StringBuilder();
 
             boolean build_control_word = false;
             StringBuilder control_word_builder = new StringBuilder();
@@ -332,7 +463,7 @@ public class FeatureExtractorStructuralPathsRTF<T> extends AFeatureExtractor<T> 
                     control_word = control_word_builder.toString();
 
                     //Save previously encountered control words
-                    if (!control_word.isEmpty()) {
+                    if (!control_word.isEmpty() && Character.isLetter(control_word.charAt(0))) {
                         group_control_words.append("\\" + control_word);
                     }
 
@@ -342,9 +473,12 @@ public class FeatureExtractorStructuralPathsRTF<T> extends AFeatureExtractor<T> 
                     build_control_word = false;
                     control_word = control_word_builder.toString();
 
-                    group_control_words.append("\\" + control_word);
+                    if (!control_word.isEmpty() && Character.isLetter(control_word.charAt(0))) {
+                        group_control_words.append("\\" + control_word);
+                    }
+
                     control_word_builder = new StringBuilder();
-                } else if (curr == '\'') {
+                } else if (curr == '\''){ // || curr == '*') {
                     //Not a control word
                     build_control_word = false;
                     control_word_builder = new StringBuilder();
@@ -353,18 +487,44 @@ public class FeatureExtractorStructuralPathsRTF<T> extends AFeatureExtractor<T> 
                     if (curr != ';') {
                         control_word_builder.append(curr);
                     }
-                } else {
-                    //Regular data
-                    group_data_builder.append(curr);
-                }
+                }// else {
+//                    //Regular data
+//                    group_data_builder.append(curr);
+//                }
             }
 
             //Save control word to Hash maps
             if (build_control_word && !control_word_builder.toString().isEmpty()) {
-                group_control_words.append("\\" + control_word_builder.toString());
+                control_word = control_word_builder.toString();
+                if (!control_word.isEmpty() && Character.isLetter(control_word.charAt(0))) {
+                    group_control_words.append("\\" + control_word);
+                }
+//                group_control_words.append("\\" + control_word_builder.toString());
             }
 
-            return group_control_words.append(" ").append(group_data_builder.toString()).toString();
+            //Correct control words with appended data
+            /*String cws = group_control_words.toString();
+            if (cws.contains("objdata")) {
+                String[] splits = cws.split("\\\\");
+                StringBuilder sb = new StringBuilder();
+                for (String word : splits) {
+                    if (word.contains("objdata")) {
+                        sb.append("\\objdata");
+                    } else {
+                        sb.append("\\" + word);
+                    }
+                }
+                group_control_words = sb;
+//                System.out.println(cws);
+//                System.out.println(group_control_words.toString());
+//                try {
+//                    System.in.read();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+            }*/
+
+            return group_control_words.toString();//.append(" ").append(group_data_builder.toString()).toString();
         }
 
         //</editor-fold>
@@ -378,6 +538,13 @@ public class FeatureExtractorStructuralPathsRTF<T> extends AFeatureExtractor<T> 
         private Data _parent;
         private int _depth;
         //</editor-fold>
+
+        public Data() {
+            this._data = "";
+            this._children = new ArrayList<>();
+            this._parent = null;
+            this._depth = 0;
+        }
 
         public Data(String data) {
             this._data = data;
@@ -455,24 +622,26 @@ public class FeatureExtractorStructuralPathsRTF<T> extends AFeatureExtractor<T> 
          */
         public String indented() {
             StringBuilder sb = new StringBuilder();
-            for (int i = 0 ; i < this._depth ; i++){
+            for (int i = 0; i < this._depth; i++) {
                 sb.append("\t");
             }
 
             return sb.toString();
         }
 
+        //<editor-fold desc="Debugging">
         private StringBuilder sb = new StringBuilder();
 
         /**
          * Writes the tree to a specific file for visualization.
+         *
          * @param path
          */
         public void writeTree(String path) {
             this.sb = new StringBuilder();
             writeTreeRec(this);
 
-            try (PrintWriter out = new PrintWriter(path)){
+            try (PrintWriter out = new PrintWriter(path)) {
                 out.println(sb.toString());
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -480,21 +649,18 @@ public class FeatureExtractorStructuralPathsRTF<T> extends AFeatureExtractor<T> 
         }
 
         private void writeTreeRec(Data it) {
-//            try {
-                this.sb.append(it.indented()).append(it.getData()).append("\n");
+            String data = it.getData();
+            this.sb.append(it.indented()).append(it.getData()).append("\n");
 
-                if (it.getChildren().size() != 0) {
+            if (it.getChildren().size() != 0) {
 
-                    for (Data c : it.getChildren()) {
-                        writeTreeRec(c);
-                    }
+                for (Data c : it.getChildren()) {
+                    writeTreeRec(c);
                 }
-//            } catch (Error e){
-//                e.printStackTrace();
-//                throw (new StackOverflowError());
-//            }
+            }
 
         }
+        //</editor-fold>
     }
 
 }
